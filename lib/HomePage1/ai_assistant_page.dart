@@ -1,4 +1,4 @@
-import 'package:final_project/HomePage1/HomaPageFirst.dart';
+import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/calendar_page.dart';
 import 'package:final_project/HomePage1/personal_page.dart';
 import 'package:final_project/HomePage1/statistics_page.dart';
@@ -136,7 +136,7 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Info',
+            label: 'Profile',
           ),
         ],
       ),

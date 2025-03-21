@@ -164,7 +164,7 @@ class HomePage extends StatelessWidget {
 
           // Sign In Button
           Positioned(
-            left: 80,
+            left: 100,
             top: 552,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -180,7 +180,7 @@ class HomePage extends StatelessWidget {
 
           // Sign Up Button
           Positioned(
-            left: 210,
+            left: 235,
             top: 553,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -195,29 +195,14 @@ class HomePage extends StatelessWidget {
           ),
 
           // Social Media Buttons
+          
           Positioned(
-            left: 10,
+            left: 50,
             top: 655,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF1F6F9),
-                fixedSize: const Size(122, 40),
-              ),
-              icon: const Icon(Icons.facebook, color: Colors.blue),
-              label: const Text(
-                'Facebook',
-                style: TextStyle(fontSize: 11),
-              ),
-              onPressed: () {},
-            ),
-          ),
-          Positioned(
-            left: 150,
-            top: 655,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF1F6F9),
-                fixedSize: const Size(122, 40),
+                fixedSize: const Size(122, 50),
               ),
               icon: const Icon(Icons.apple, color: Colors.black),
               label: const Text(
@@ -228,12 +213,12 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: 290,
+            left: 260,
             top: 655,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF1F6F9),
-                fixedSize: const Size(122, 40),
+                fixedSize: const Size(122, 50),
               ),
               icon: const Icon(Icons.g_mobiledata_rounded, color: Colors.red),
               label: const Text(

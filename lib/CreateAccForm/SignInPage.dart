@@ -1,4 +1,4 @@
-import 'package:final_project/HomePage1/HomaPageFirst.dart';
+import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
