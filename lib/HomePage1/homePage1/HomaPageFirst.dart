@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/HomePage1/ai_assistant_page.dart';
 import 'package:final_project/HomePage1/calendar_page.dart';
-import 'package:final_project/HomePage1/personal_page.dart';
+import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:final_project/HomePage1/statistics_page.dart';
 
 class HomePageFirst extends StatefulWidget {
@@ -428,7 +428,7 @@ Container(
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CustomHabit(), // Navigate to CustomHabit page
+                      builder: (context) => CustomTask(), // Navigate to CustomHabit page
                     ),
                   );
                 },

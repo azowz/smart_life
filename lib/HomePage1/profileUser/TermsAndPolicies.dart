@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 
-class CustomTask extends StatelessWidget {
+class TermsAndPolicies extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Task'),
+        title: Text('Terms And Policies'),
       ),
       body: Center(
-        child: Text('This is the Custom task Page!'),
+        child: Text('Here you can TermsAndPolicies'),
       ),
     );
   }
 }
-
-
-

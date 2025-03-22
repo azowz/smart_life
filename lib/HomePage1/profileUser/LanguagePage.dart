@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 
-class CustomTask extends StatelessWidget {
+class LanguagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Task'),
+        title: Text('langage'),
       ),
       body: Center(
-        child: Text('This is the Custom task Page!'),
+        child: Text('Here you can change the langauge'),
       ),
     );
   }
 }
-
-
-

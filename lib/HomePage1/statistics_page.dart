@@ -1,7 +1,7 @@
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/ai_assistant_page.dart';
 import 'package:final_project/HomePage1/calendar_page.dart';
-import 'package:final_project/HomePage1/personal_page.dart';
+import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:flutter/material.dart';
 
 
@@ -13,8 +13,37 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
-  int _selectedIndex = 2; // Start on the AI Assistant tab by default
+  int _selectedIndex = 0; // Start on the AI Assistant tab by default
 
+
+void _navigateToPage(int index, BuildContext context) {
+    Widget page;
+
+    switch (index) {
+      case 1:
+        page = const StatisticsPage();
+        break;
+      case 2:
+        page = const AiAssistantPage();
+        break;
+      case 3:
+        page = const CalendarPage();
+        break;
+      case 4:
+        page = const PersonalPage();
+        break;
+      default:
+        page = const HomePageFirst();
+        break;
+    }
+    Navigator.of(context).pushReplacement(PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionDuration: Duration(milliseconds: 200), // Speed up the transition
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(opacity: animation, child: child); // Smooth fade transition
+      },
+    ));
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,6 +57,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           style: TextStyle(fontSize: 24),
         ),
       ),
+      // Fix here: Corrected the semicolon after the body section
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
@@ -35,58 +65,20 @@ class _StatisticsPageState extends State<StatisticsPage> {
           setState(() {
             _selectedIndex = index;
           });
-          if (index == 0) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const HomePageFirst(),
-              ),
-            );
-          } else if (index == 2) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const AiAssistantPage(),
-              ),
-            );
-          } else if (index == 3) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const CalendarPage(),
-              ),
-            );
-          } else if (index == 4) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const PersonalPage(),
-              ),
-            );
-          }
+           // Handle navigation and smooth transition
+          _navigateToPage(index, context);
+
+          
         },
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            label: 'statistics',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'finalProject_img/ai.png',
-              width: 50,
-              height: 50,
-            ),
-            label: 'AI assistant',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'calendar',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: 'Statistics'),
+          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'AI Assistant'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Calendar'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
+
+  
       ),
     );
   }
