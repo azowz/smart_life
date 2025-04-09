@@ -1,20 +1,24 @@
-import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 import 'package:final_project/HomePage1/calendar_page.dart';
+import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
+
+import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
+import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:final_project/HomePage1/statistics_page.dart';
 import 'package:flutter/material.dart';
 
-class DoneEditHabit extends StatefulWidget {
-  const DoneEditHabit({super.key});
+class DeleteTask extends StatefulWidget {
+  const DeleteTask({Key? key}) : super(key: key);
 
   @override
-  State<DoneEditHabit> createState() => _DoneEditHappitState();
+  _DeleteTaskState createState() => _DeleteTaskState();
 }
 
-class _DoneEditHappitState extends State<DoneEditHabit> {
-  int _selectedIndex = 0; // Start on the AI Assistant tab by default
+class _DeleteTaskState extends State<DeleteTask> {
+  int _selectedIndex = 0;
 
+  // Navigate to other pages when a tab is selected
   void _navigateToPage(int index, BuildContext context) {
     Widget page;
 
@@ -37,11 +41,9 @@ class _DoneEditHappitState extends State<DoneEditHabit> {
     }
     Navigator.of(context).pushReplacement(PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration:
-          const Duration(milliseconds: 200), // Speed up the transition
+      transitionDuration: const Duration(milliseconds: 200), // Speed up the transition
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-            opacity: animation, child: child); // Smooth fade transition
+        return FadeTransition(opacity: animation, child: child); // Smooth fade transition
       },
     ));
   }
@@ -49,16 +51,14 @@ class _DoneEditHappitState extends State<DoneEditHabit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Color(0xFF2D3953), // Set the background color of the body
+      backgroundColor: const Color(0xFF2D3953),
       body: Center(
         child: Container(
           width: 340,
           height: 400,
           decoration: BoxDecoration(
-            color: Color(0xFFD9D9D9), // Background color of the container
-            borderRadius: BorderRadius.circular(
-                25), // Set the border radius of the container
+            color: const Color(0xFFD9D9D9),
+            borderRadius: BorderRadius.circular(25),
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -67,49 +67,59 @@ class _DoneEditHappitState extends State<DoneEditHabit> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  'finalProject_img/comp.png', // Replace with your image path
-                  width: 139, // Set width of the image
-                  height: 145, // Set height of the image
+                  'finalProject_img/delete.png',
+                  width: 139,
+                  height: 145,
                 ),
-                SizedBox(height: 10),
-                Text(
-                  'Done!',
+                const SizedBox(height: 10),
+                const Text(
+                  'Are you sure you want to delete?',
                   style: TextStyle(
-                    fontSize: 36,
+                    fontSize: 19,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
-                  'New Habit Goal has added\nLet’s do the best to achieve your goal!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF666666),
-                  ),
-                ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomePageFirst(),
+                        builder: (context) => const ConfirmDelete(),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF3F3E0),
-                    minimumSize: Size(258, 36),
+                    backgroundColor: const Color(0xFFF3F3E0),
+                    minimumSize: const Size(258, 36),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  child: Text(
-                    'OK',
+                  child: const Text(
+                    'Delete',
                     style: TextStyle(
                       fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ViewAllTask(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -127,17 +137,13 @@ class _DoneEditHappitState extends State<DoneEditHabit> {
           setState(() {
             _selectedIndex = index;
           });
-          // Handle navigation and smooth transition
-          _navigateToPage(index, context);
+          _navigateToPage(index, context); // Navigate when tapping on a tab
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart_outlined), label: 'Statistics'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.smart_toy), label: 'AI Assistant'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month), label: 'Calendar'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: 'Statistics'),
+          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'AI Assistant'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -145,17 +151,15 @@ class _DoneEditHappitState extends State<DoneEditHabit> {
   }
 }
 
-
-
-class DoneEditTask extends StatefulWidget {
-  const DoneEditTask({super.key});
+class ConfirmDelete extends StatefulWidget {
+  const ConfirmDelete({Key? key}) : super(key: key);
 
   @override
-  _DoneEditTaskState createState() => _DoneEditTaskState();
+  _ConfirmDeleteState createState() => _ConfirmDeleteState();
 }
 
-class _DoneEditTaskState extends State<DoneEditTask> {
-  int _selectedIndex = 0; // Start on the AI Assistant tab by default
+class _ConfirmDeleteState extends State<ConfirmDelete> {
+  int _selectedIndex = 0;
 
   void _navigateToPage(int index, BuildContext context) {
     Widget page;
@@ -179,11 +183,9 @@ class _DoneEditTaskState extends State<DoneEditTask> {
     }
     Navigator.of(context).pushReplacement(PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration:
-          const Duration(milliseconds: 200), // Speed up the transition
+      transitionDuration: const Duration(milliseconds: 200), // Speed up the transition
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-            opacity: animation, child: child); // Smooth fade transition
+        return FadeTransition(opacity: animation, child: child); // Smooth fade transition
       },
     ));
   }
@@ -191,14 +193,14 @@ class _DoneEditTaskState extends State<DoneEditTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2D3953), // Set the background color of the body
+      backgroundColor: const Color(0xFF2D3953),
       body: Center(
         child: Container(
           width: 340,
           height: 400,
           decoration: BoxDecoration(
-            color: Color(0xFFD9D9D9), // Background color of the container
-            borderRadius: BorderRadius.circular(25), // Set the border radius of the container
+            color: const Color(0xFFD9D9D9),
+            borderRadius: BorderRadius.circular(25),
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -206,47 +208,54 @@ class _DoneEditTaskState extends State<DoneEditTask> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  'finalProject_img/comp.png', // Replace with your image path
-                  width: 139, // Set width of the image
-                  height: 145, // Set height of the image
+                // Stack to place the check sign at the top-right of the image
+                Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    Image.asset(
+                      'finalProject_img/delete.png', // Using the image instead of an icon
+                      width: 100, // Adjust the width as needed
+                      height: 100, // Adjust the height as needed
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Icon(
+                        Icons.check_circle,
+                        size: 30,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10),
-                Text(
-                  'Done!',
+                const SizedBox(height: 10),
+                const Text(
+                  'List has been deleted',
                   style: TextStyle(
-                    fontSize: 36,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
-                  'New Task Goal has been added\nLet’s do the best to achieve your goal!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF666666),
-                  ),
-                ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
+                    // Navigate back to ViewAllHabits after deletion
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomePageFirst(),
+                        builder: (context) => const ViewAllTask(),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF3F3E0),
-                    minimumSize: Size(258, 36),
+                    backgroundColor: const Color(0xFFF3F3E0),
+                    minimumSize: const Size(258, 36),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'OK',
                     style: TextStyle(
                       fontSize: 24,
@@ -267,8 +276,7 @@ class _DoneEditTaskState extends State<DoneEditTask> {
           setState(() {
             _selectedIndex = index;
           });
-          // Handle navigation and smooth transition
-          _navigateToPage(index, context);
+          _navigateToPage(index, context); // Navigate when tapping on a tab
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

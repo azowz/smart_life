@@ -2,14 +2,12 @@ import 'package:final_project/HomePage1/homePage1/DoneEditHabit.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:flutter/material.dart';
 
-class CustomTask extends StatefulWidget {  // The correct class declaration for CustomTask
-  const CustomTask({super.key});
-
+class AddTask extends StatefulWidget {
   @override
-  _CustomTaskState createState() => _CustomTaskState();
+  _AddTaskState createState() => _AddTaskState();
 }
 
-class _CustomTaskState extends State<CustomTask> {
+class _AddTaskState extends State<AddTask> {
   int _selectedPeriod = 1; // Default selected value for Period
   String _selectedTaskType = 'Once'; // Default selected value for Task Type
 
@@ -29,7 +27,7 @@ class _CustomTaskState extends State<CustomTask> {
         ),
         title: Center( // Center the title text in the AppBar
           child: Text(
-            'Edit Task Goal',
+            'Create New Task Goal ',
             style: TextStyle(color: Colors.black),  // Adjusted title color
           ),
         ),
@@ -42,7 +40,7 @@ class _CustomTaskState extends State<CustomTask> {
           children: [
             // SizedBox added for gap between AppBar and container
             SizedBox(height: 100),
-
+            
             // Container with height 500, background color white, and border radius of 2
             Container(
               decoration: BoxDecoration(
@@ -194,7 +192,7 @@ class _CustomTaskState extends State<CustomTask> {
                         );
                       },
                       child: Text(
-                        'Edit Task',
+                        'Create Now',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.black, // Text color inside the button
