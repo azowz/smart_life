@@ -1,7 +1,7 @@
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -31,6 +31,25 @@ class _SignInPageState extends State<SignInPage> {
     return null;
   }
 
+  Future<Map<String, dynamic>?> _fetchUserDetails() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user == null) return null;
+
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        return userDoc.data() as Map<String, dynamic>;
+      }
+    } catch (e) {
+      print("Error fetching user details: $e");
+    }
+    return null;
+  }
+
   Future<void> _signIn() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -40,10 +59,19 @@ class _SignInPageState extends State<SignInPage> {
         password: _passwordController.text.trim(),
       );
 
+      print("User signed in successfully!");
+
+      Map<String, dynamic>? userDetails = await _fetchUserDetails();
+      if (userDetails != null) {
+        print("User Name: ${userDetails['name']}");
+      } else {
+        print("Failed to retrieve user details.");
+      }
+
       // Navigate to HomePageFirst on successful login
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePageFirst()),
+        MaterialPageRoute(builder: (context) => const HomePageFirst()),
       );
     } on FirebaseAuthException catch (e) {
       String message = 'Login failed. Please try again.';

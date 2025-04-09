@@ -1,12 +1,13 @@
 buildscript {
-    ext.kotlin_version = '1.7.10' // Ensure this matches your Kotlin version
+    ext.kotlin_version = '1.8.10'
+ // Ensure this matches your Kotlin version
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0' // Ensure this matches your Android Gradle plugin version
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:7.4.0' // Ensure this matches your Android Gradle plugin version
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10'
         classpath 'com.google.gms:google-services:4.3.3'  // Add this in the dependencies block
         classpath 'com.google.gms:google-services:4.3.15'
 
@@ -17,12 +18,14 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        jcenter()
     }
 }
 allprojects {
     repositories {
         google()
         mavenCentral()
+        jcenter()
     }
 }
 

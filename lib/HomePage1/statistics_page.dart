@@ -1,5 +1,5 @@
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
-import 'package:final_project/HomePage1/ai_assistant_page.dart';
+import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 import 'package:final_project/HomePage1/calendar_page.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,7 @@ void _navigateToPage(int index, BuildContext context) {
     }
     Navigator.of(context).pushReplacement(PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration: Duration(milliseconds: 200), // Speed up the transition
+      transitionDuration: const Duration(milliseconds: 200), // Speed up the transition
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(opacity: animation, child: child); // Smooth fade transition
       },

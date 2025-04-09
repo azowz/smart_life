@@ -5,7 +5,7 @@ import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_project/HomePage1/ai_assistant_page.dart';
+import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 import 'package:final_project/HomePage1/calendar_page.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:final_project/HomePage1/statistics_page.dart';
@@ -59,7 +59,7 @@ void _navigateToPage(int index, BuildContext context) {
     }
     Navigator.of(context).pushReplacement(PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration: Duration(milliseconds: 200), // Speed up the transition
+      transitionDuration: const Duration(milliseconds: 200), // Speed up the transition
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(opacity: animation, child: child); // Smooth fade transition
       },
@@ -253,14 +253,14 @@ class _MyHomePageState extends State<HomePageFirst> {
                 0.9, // Set width to 90% of screen width
             height: 72,
             decoration: BoxDecoration(
-              color: Color(0xFFD9D9D9), // Background color
+              color: const Color(0xFFD9D9D9), // Background color
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
                 // Left Section: Water Icon with Circle (2 cm)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -278,8 +278,8 @@ class _MyHomePageState extends State<HomePageFirst> {
                 ),
 
                 // Middle Section: Text "Drink the water" and "500/500ml"
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
+                const Padding(
+                  padding: EdgeInsets.only(left: 16.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,13 +325,13 @@ class _MyHomePageState extends State<HomePageFirst> {
                             .white, // Set button background color to white
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(
+                          side: const BorderSide(
                               color: Colors.grey), // Optional border color
                         ),
                         padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       ),
-                      child: Text(
+                      child: const Text(
                         '+',
                         style: TextStyle(
                           fontSize: 24,
@@ -382,7 +382,7 @@ Container(
       width: MediaQuery.of(context).size.width * 0.9, // 90% of screen width
       height: 72,
       decoration: BoxDecoration(
-        color: Color(0xFFD9D9D9), // Background color
+        color: const Color(0xFFD9D9D9), // Background color
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -405,7 +405,7 @@ Container(
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink the tap area for a smaller button size
                 ),
               ),
-              Text(
+              const Text(
                 'Right the task here',
                 style: TextStyle(
                   color: Colors.black, // Text color black
@@ -436,13 +436,13 @@ Container(
                   backgroundColor: Colors.white, // Set button background color to white
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(
+                    side: const BorderSide(
                       color: Colors.grey, // Optional border color
                     ),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 ),
-                child: Text(
+                child: const Text(
                   '+',
                   style: TextStyle(
                     fontSize: 24,

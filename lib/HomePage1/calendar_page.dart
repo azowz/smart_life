@@ -1,4 +1,4 @@
-import 'package:final_project/HomePage1/ai_assistant_page.dart';
+import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:final_project/HomePage1/statistics_page.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+  const CalendarPage({super.key});
 
   @override
   State<CalendarPage> createState() => _CalendarPageState();
@@ -51,7 +51,7 @@ class _CalendarPageState extends State<CalendarPage> {
     Navigator.of(context).pushReplacement(PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionDuration:
-          Duration(milliseconds: 200), // Speed up the transition
+          const Duration(milliseconds: 200), // Speed up the transition
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
             opacity: animation, child: child); // Smooth fade transition

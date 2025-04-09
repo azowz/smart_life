@@ -80,9 +80,9 @@ class _ResetWithEmailState extends State<ForgetPasswordPage> {
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 80),
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: Text(
                   'Email',
                   style: TextStyle(
                     color: Colors.white,
@@ -113,7 +113,7 @@ class _ResetWithEmailState extends State<ForgetPasswordPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFF3F3E0),
                   minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,
                   ),
                 ),
@@ -139,7 +139,7 @@ class _ResetWithEmailState extends State<ForgetPasswordPage> {
                     MaterialPageRoute(builder: (context) => const SignInPage()),
                   );
                 },
-                child: Text(
+                child: const Text(
                   'Return back to sign in',
                   style: TextStyle(
                     color: Colors.blue,

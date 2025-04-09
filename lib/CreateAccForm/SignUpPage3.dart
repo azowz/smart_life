@@ -28,7 +28,7 @@ class _SignUpPage3State extends State<SignUpPage3> {
     // Save information and navigate to HomePageC
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => HomePageFirst()),
+      MaterialPageRoute(builder: (context) => const HomePageFirst()),
     );
   }
 

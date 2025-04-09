@@ -1,10 +1,11 @@
-import 'package:final_project/CreateAccForm/HomePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
+  const EditProfile({super.key});
+
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -31,7 +32,7 @@ class _EditProfileState extends State<EditProfile> {
         _passwordController.text.isEmpty) {
       // Show error if any field is empty
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('All fields must be filled')),
+        const SnackBar(content: Text('All fields must be filled')),
       );
       return;
     }
@@ -55,7 +56,7 @@ class _EditProfileState extends State<EditProfile> {
           updatedData['username'] = _usernameController.text;
         } else if (_usernameController.text == _currentUsername) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('New username cannot be the same as the current one')),
+            const SnackBar(content: Text('New username cannot be the same as the current one')),
           );
           return;
         }
@@ -64,7 +65,7 @@ class _EditProfileState extends State<EditProfile> {
           updatedData['email'] = _emailController.text;
         } else if (_emailController.text == _currentEmail) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('New email cannot be the same as the current one')),
+            const SnackBar(content: Text('New email cannot be the same as the current one')),
           );
           return;
         }
@@ -73,7 +74,7 @@ class _EditProfileState extends State<EditProfile> {
           updatedData['phone'] = _phoneController.text;
         } else if (_phoneController.text == _currentPhone) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('New phone number cannot be the same as the current one')),
+            const SnackBar(content: Text('New phone number cannot be the same as the current one')),
           );
           return;
         }
@@ -88,12 +89,12 @@ class _EditProfileState extends State<EditProfile> {
 
           // Show a success message
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('User information updated successfully')),
+            const SnackBar(content: Text('User information updated successfully')),
           );
         } else {
           // If no data changed, show a message
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('No changes were made')),
+            const SnackBar(content: Text('No changes were made')),
           );
         }
       }
@@ -146,7 +147,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2D3953),
+      backgroundColor: const Color(0xFF2D3953),
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -156,7 +157,7 @@ class _EditProfileState extends State<EditProfile> {
                 Container(
                   width: double.infinity,
                   height: 166,
-                  color: Color(0xFFD9D9D9),
+                  color: const Color(0xFFD9D9D9),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -166,12 +167,12 @@ class _EditProfileState extends State<EditProfile> {
                           width: 40,
                           height: 40,
                           child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.black),
+                            icon: const Icon(Icons.arrow_back, color: Colors.black),
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => PersonalPage()),
+                                    builder: (context) => const PersonalPage()),
                               );
                             },
                             style: IconButton.styleFrom(
@@ -183,7 +184,7 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                       ),
-                      Text(
+                      const Text(
                         "Edit Profile",
                         style: TextStyle(
                           fontSize: 20,
@@ -196,7 +197,7 @@ class _EditProfileState extends State<EditProfile> {
                           width: 40,
                           height: 40,
                           child: IconButton(
-                            icon: Icon(Icons.settings, color: Colors.black),
+                            icon: const Icon(Icons.settings, color: Colors.black),
                             onPressed: () {},
                             style: IconButton.styleFrom(
                               backgroundColor: Colors.white,
@@ -210,7 +211,7 @@ class _EditProfileState extends State<EditProfile> {
                     ],
                   ),
                 ),
-                SizedBox(height: 80),
+                const SizedBox(height: 80),
                 SizedBox(
                   width: 120,
                   height: 29,
@@ -228,7 +229,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       padding: EdgeInsets.zero,
                     ),
-                    child: Text(
+                    child: const Text(
                       "Change Photo",
                       style: TextStyle(color: Colors.white, fontSize: 15),
                     ),
@@ -381,12 +382,12 @@ class _EditProfileState extends State<EditProfile> {
                     child: ElevatedButton(
                       onPressed: updateUserInfo,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFF3F3E0),
+                        backgroundColor: const Color(0xFFF3F3E0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Update",
                         style: TextStyle(
                           color: Colors.black,
@@ -407,7 +408,7 @@ class _EditProfileState extends State<EditProfile> {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.black, width: 3),
               ),
-              child: CircleAvatar(
+              child: const CircleAvatar(
                 radius: 61,
                 backgroundImage: AssetImage("finalProject_img/male.png"),
               ),

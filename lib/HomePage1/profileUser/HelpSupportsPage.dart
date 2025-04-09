@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class HelpSupportsPage extends StatelessWidget {
+  const HelpSupportsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Helps Supports Pade'),
+        title: const Text('Helps Supports Pade'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Here you can HelpsSupportsPade'),
       ),
     );
