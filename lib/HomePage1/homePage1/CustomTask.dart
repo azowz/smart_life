@@ -2,7 +2,7 @@ import 'package:final_project/HomePage1/homePage1/DoneEditHabit.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:flutter/material.dart';
 
-class CustomTask extends StatefulWidget {  // The correct class declaration for CustomTask
+class CustomTask extends StatefulWidget {
   const CustomTask({super.key});
 
   @override
@@ -10,16 +10,17 @@ class CustomTask extends StatefulWidget {  // The correct class declaration for 
 }
 
 class _CustomTaskState extends State<CustomTask> {
-  int _selectedPeriod = 1; // Default selected value for Period
-  String _selectedTaskType = 'Once'; // Default selected value for Task Type
+  int _selectedPeriod = 1;
+  String _selectedTaskType = 'Once';
+  String _customPeriod = ''; // New: stores input for custom period
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFD9D9D9),  // AppBar background color updated
+        backgroundColor: const Color(0xFFD9D9D9),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
@@ -27,98 +28,71 @@ class _CustomTaskState extends State<CustomTask> {
             );
           },
         ),
-        title: Center( // Center the title text in the AppBar
+        title: const Center(
           child: Text(
             'Edit Task Goal',
-            style: TextStyle(color: Colors.black),  // Adjusted title color
+            style: TextStyle(color: Colors.black),
           ),
         ),
       ),
       body: Container(
-        color: Color(0xFF2D3953),
-        padding: EdgeInsets.all(16.0),
+        color: const Color(0xFF2D3953),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // SizedBox added for gap between AppBar and container
-            SizedBox(height: 100),
-
-            // Container with height 500, background color white, and border radius of 2
+            const SizedBox(height: 100),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white, // Background color set to white
-                borderRadius: BorderRadius.circular(2), // Border radius for container
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(2),
               ),
-              height: 440, // Increased height to fit new content
-              padding: EdgeInsets.all(16.0),
+              height: _selectedTaskType == 'Custom' ? 510 : 440,
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Your Goal Label
-                  Text(
-                    'Your Goal',
-                    style: TextStyle(color: Colors.black, fontSize: 18),
-                  ),
-                  SizedBox(height: 8.0),
-                  // Your Goal Input Field
+                  const Text('Your Goal', style: TextStyle(color: Colors.black, fontSize: 18)),
+                  const SizedBox(height: 8.0),
                   Container(
                     height: 42,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2), // Border radius for input container
-                    ),
                     child: TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
+                        border: OutlineInputBorder(),
                       ),
                     ),
                   ),
-                  SizedBox(height: 16.0),
-                  // Task Name Label
-                  Text(
-                    'Task Name',
-                    style: TextStyle(color: Colors.black, fontSize: 18),
-                  ),
-                  SizedBox(height: 8.0),
-                  // Task Name Input Field
+                  const SizedBox(height: 16.0),
+                  const Text('Task Name', style: TextStyle(color: Colors.black, fontSize: 18)),
+                  const SizedBox(height: 8.0),
                   Container(
                     height: 42,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2), // Border radius for input container
-                    ),
                     child: TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
+                        border: OutlineInputBorder(),
                       ),
                     ),
                   ),
-                  SizedBox(height: 16.0),
-                  // Period Label and Drop-down Input Field
+                  const SizedBox(height: 16.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Period',
-                        style: TextStyle(color: Colors.black, fontSize: 18),
-                      ),
+                      const Text('Period', style: TextStyle(color: Colors.black, fontSize: 18)),
                       Container(
-                        width: 180, // Ensuring both dropdowns are the same size
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        width: 180,
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(2), // Border radius for dropdown container
+                          borderRadius: BorderRadius.circular(2),
                           border: Border.all(color: Colors.black),
                         ),
                         child: DropdownButton<int>(
-                          value: _selectedPeriod, // Displaying the selected value
-                          isExpanded: true, // To make the dropdown fill the width
+                          value: _selectedPeriod,
+                          isExpanded: true,
                           items: List.generate(
                             30,
                             (index) => DropdownMenuItem<int>(
@@ -135,35 +109,24 @@ class _CustomTaskState extends State<CustomTask> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.0),
-                  // Task Type Label and Drop-down Input Field
+                  const SizedBox(height: 16.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Task Type',
-                        style: TextStyle(color: Colors.black, fontSize: 18),
-                      ),
+                      const Text('Task Type', style: TextStyle(color: Colors.black, fontSize: 18)),
                       Container(
-                        width: 180, // Ensuring both dropdowns are the same size
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        width: 180,
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(2), // Border radius for dropdown container
+                          borderRadius: BorderRadius.circular(2),
                           border: Border.all(color: Colors.black),
                         ),
                         child: DropdownButton<String>(
-                          value: _selectedTaskType, // Displaying the selected value
-                          isExpanded: true, // To make the dropdown fill the width
-                          items: [
-                            'Once',
-                            'Everyday',
-                            'Weekly',
-                            'Monthly',
-                            'Custom', // Example of another option you can add
-                          ]
-                              .map((String taskType) =>
-                                  DropdownMenuItem<String>(
+                          value: _selectedTaskType,
+                          isExpanded: true,
+                          items: ['Once', 'Everyday', 'Weekly', 'Monthly', 'Custom']
+                              .map((String taskType) => DropdownMenuItem<String>(
                                     value: taskType,
                                     child: Text(taskType),
                                   ))
@@ -177,28 +140,55 @@ class _CustomTaskState extends State<CustomTask> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 40.0),
-                  // Create Now Button
+
+                  // Conditionally show custom time input
+                  if (_selectedTaskType == 'Custom') ...[
+                    const SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Custom Period', style: TextStyle(color: Colors.black, fontSize: 18)),
+                        Container(
+                          width: 180,
+                          height: 42,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              setState(() {
+                                _customPeriod = value;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                              hintText: 'Enter time (e.g. 5 days)',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  const SizedBox(height: 40.0),
                   Container(
-                    width: double.infinity, // Make button take up the full width
-                    height: 45, // Height of the button
+                    width: double.infinity,
+                    height: 45,
                     decoration: BoxDecoration(
-                      color: Color(0xFFF3F3E0), // Button background color
-                      borderRadius: BorderRadius.circular(2), // Border radius for button
+                      color: const Color(0xFFF3F3E0),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                     child: TextButton(
                       onPressed: () {
+                        // Optional: you can use _customPeriod here for logic
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => DoneEditTask()),
+                          MaterialPageRoute(builder: (context) => const DoneEditTask()),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Edit Task',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black, // Text color inside the button
-                        ),
+                        style: TextStyle(fontSize: 18, color: Colors.black),
                       ),
                     ),
                   ),
