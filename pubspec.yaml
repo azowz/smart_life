@@ -80,6 +80,8 @@ flutter:
     - finalProject_img/ai.png
     - finalProject_img/comp.png
     - finalProject_img/delete.png
+    - finalProject_img/Splash.jpeg
+    - finalProject_img/Splash1.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
