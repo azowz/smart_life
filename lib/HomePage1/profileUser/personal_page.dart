@@ -4,12 +4,13 @@ import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:final_project/HomePage1/profileUser/HelpSupportsPage.dart';
 import 'package:final_project/HomePage1/profileUser/LanguagePage.dart';
 import 'package:final_project/HomePage1/profileUser/TermsAndPolicies.dart';
+import 'package:final_project/Statistic/calender_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
-import 'package:final_project/HomePage1/calendar_page.dart';
+
 import 'package:final_project/HomePage1/profileUser/EditProfile.dart';
-import 'package:final_project/HomePage1/statistics_page.dart';
+import 'package:final_project/Statistic/statistics_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';  // Firebase authentication package
 
 class PersonalPage extends StatefulWidget {

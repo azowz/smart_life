@@ -1,15 +1,16 @@
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
-import 'package:final_project/HomePage1/calendar_page.dart';
+
 import 'package:final_project/HomePage1/homePage1/CustomHabit.dart';
 import 'package:final_project/HomePage1/homePage1/DeleteHabits.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:final_project/HomePage1/profileUser/EditProfile.dart';
-import 'package:final_project/HomePage1/statistics_page.dart';
+import 'package:final_project/Statistic/calender_Page.dart';
+import 'package:final_project/Statistic/statistics_page.dart';
 import 'package:flutter/material.dart';
 
 class HabitsSettings extends StatefulWidget {
-  const HabitsSettings({Key? key}) : super(key: key);
+  const HabitsSettings({super.key});
 
   @override
   _HabitsSettingsState createState() => _HabitsSettingsState();

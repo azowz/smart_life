@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
+
   @override
   _SplashPageState createState() => _SplashPageState();
 }
@@ -23,7 +25,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
 
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
@@ -46,8 +48,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
           opacity: _animation,
           child: Image.asset(
             'finalProject_img/Splash1.jpeg', // Replace with your image
-            width: 400,
-            height: 400,
+            width: 600,
+            height: 600,
           ),
         ),
       ),

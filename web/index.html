@@ -1,38 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
 
-  <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="final_project">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
   <title>final_project</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #2D3953;
+      font-family: Arial, sans-serif;
+    }
+
+    .custom-ui {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      text-align: center;
+    }
+
+    .custom-ui button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: white;
+      color: #2D3953;
+      transition: background 0.3s ease;
+    }
+
+    .custom-ui button:hover {
+      background-color: #ccc;
+    }
+
+    .output {
+      color: white;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <!-- Custom UI on top of Flutter -->
+  <div class="custom-ui">
+    <button onclick="showResult('task')">Show Result for Tasks</button>
+    <button onclick="showResult('habit')">Show for Habit</button>
+    <button onclick="showResult('ai')">Show AI Chat</button>
+    <div class="output" id="output"></div>
+  </div>
+
+  <!-- Flutter app loads here -->
   <script src="flutter_bootstrap.js" async></script>
+
+  <script>
+    function showResult(type) {
+      const output = document.getElementById('output');
+      let text = '';
+      switch(type) {
+        case 'task':
+          text = 'Here are the results for your tasks.';
+          break;
+        case 'habit':
+          text = 'Here is your habit tracking info.';
+          break;
+        case 'ai':
+          text = 'Launching AI chat...';
+          break;
+      }
+      output.textContent = text;
+    }
+  </script>
 </body>
 </html>

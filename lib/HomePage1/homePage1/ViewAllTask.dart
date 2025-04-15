@@ -1,11 +1,12 @@
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
-import 'package:final_project/HomePage1/calendar_page.dart';
+
 import 'package:final_project/HomePage1/homePage1/AddTask.dart';
 import 'package:final_project/HomePage1/homePage1/CustomTask.dart';
 import 'package:final_project/HomePage1/homePage1/DeleteTask.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/HomePage1/statistics_page.dart';
+import 'package:final_project/Statistic/calender_Page.dart';
+import 'package:final_project/Statistic/statistics_page.dart';
 import 'package:flutter/material.dart';
 
 class ViewAllTask extends StatefulWidget {

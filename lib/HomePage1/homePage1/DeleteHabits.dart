@@ -1,14 +1,15 @@
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
-import 'package:final_project/HomePage1/calendar_page.dart';
+
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
 
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/HomePage1/statistics_page.dart';
+import 'package:final_project/Statistic/calender_Page.dart';
+import 'package:final_project/Statistic/statistics_page.dart';
 import 'package:flutter/material.dart';
 
 class DeleteHabits extends StatefulWidget {
-  const DeleteHabits({Key? key}) : super(key: key);
+  const DeleteHabits({super.key});
 
   @override
   _DeleteHabitsState createState() => _DeleteHabitsState();
@@ -156,7 +157,7 @@ class _DeleteHabitsState extends State<DeleteHabits> {
 
 
 class ConfirmDelete extends StatefulWidget {
-  const ConfirmDelete({Key? key}) : super(key: key);
+  const ConfirmDelete({super.key});
 
   @override
   _ConfirmDeleteState createState() => _ConfirmDeleteState();

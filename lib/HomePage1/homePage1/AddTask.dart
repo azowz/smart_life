@@ -3,6 +3,8 @@ import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:flutter/material.dart';
 
 class AddTask extends StatefulWidget {
+  const AddTask({super.key});
+
   @override
   _AddTaskState createState() => _AddTaskState();
 }
@@ -158,7 +160,7 @@ class _AddTaskState extends State<AddTask> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Custom Duration', style: TextStyle(color: Colors.black, fontSize: 18)),
-                        Container(
+                        SizedBox(
                           width: 180,
                           height: 42,
                           child: TextField(

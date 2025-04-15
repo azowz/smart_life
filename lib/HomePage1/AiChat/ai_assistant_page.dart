@@ -1,7 +1,8 @@
-import 'package:final_project/HomePage1/calendar_page.dart';
+
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/HomePage1/statistics_page.dart';
+import 'package:final_project/Statistic/calender_Page.dart';
+import 'package:final_project/Statistic/statistics_page.dart';
 import 'package:flutter/material.dart';
 
 class AiAssistantPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class AiAssistantPage extends StatefulWidget {
 
 class _AiAssistantPageState extends State<AiAssistantPage> {
   int _selectedIndex = 0;
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   List<String> messages = ['Hello, how can I help you?']; // Default message from AI
   List<Map<String, dynamic>> savedChats = []; // List to save chats (with a name for each chat)
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

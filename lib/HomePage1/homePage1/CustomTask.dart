@@ -54,7 +54,7 @@ class _CustomTaskState extends State<CustomTask> {
                 children: [
                   const Text('Your Goal', style: TextStyle(color: Colors.black, fontSize: 18)),
                   const SizedBox(height: 8.0),
-                  Container(
+                  SizedBox(
                     height: 42,
                     child: TextField(
                       decoration: const InputDecoration(
@@ -67,7 +67,7 @@ class _CustomTaskState extends State<CustomTask> {
                   const SizedBox(height: 16.0),
                   const Text('Task Name', style: TextStyle(color: Colors.black, fontSize: 18)),
                   const SizedBox(height: 8.0),
-                  Container(
+                  SizedBox(
                     height: 42,
                     child: TextField(
                       decoration: const InputDecoration(
@@ -148,7 +148,7 @@ class _CustomTaskState extends State<CustomTask> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Custom Period', style: TextStyle(color: Colors.black, fontSize: 18)),
-                        Container(
+                        SizedBox(
                           width: 180,
                           height: 42,
                           child: TextField(

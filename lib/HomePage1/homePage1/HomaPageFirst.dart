@@ -2,13 +2,14 @@ import 'package:final_project/HomePage1/homePage1/CustomHabit.dart';
 import 'package:final_project/HomePage1/homePage1/CustomTask.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
+import 'package:final_project/Statistic/calender_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
-import 'package:final_project/HomePage1/calendar_page.dart';
+
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/HomePage1/statistics_page.dart';
+import 'package:final_project/Statistic/statistics_page.dart';
 
 class HomePageFirst extends StatefulWidget {
   const HomePageFirst({super.key});

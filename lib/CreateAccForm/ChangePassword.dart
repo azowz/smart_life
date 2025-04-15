@@ -51,7 +51,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               const SizedBox(height: 20),
               Center(
                 child: Image.asset(
-                  'finalProject_img/homeScreen.png', // Replace with your image asset
+                  'finalProject_img/Splash1.jpeg', // Replace with your image asset
                   height: 200,
                   width: 300,
                   fit: BoxFit.contain,

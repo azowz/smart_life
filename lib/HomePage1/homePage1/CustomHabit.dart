@@ -1,3 +1,5 @@
+import 'package:final_project/HomePage1/homePage1/ReminderHabits.dart';
+import 'package:final_project/Statistic/schedule_P.dart';
 import 'package:flutter/material.dart';
 import 'DoneEditHabit.dart'; // Make sure this import is added
 
@@ -408,66 +410,21 @@ class _CustomHabitState extends State<CustomHabit> {
               SizedBox(height: 30),
 
               // Reminder Section
-              Container(
-                width: 370,
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text("Enable Reminder", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        Switch(
-                          value: isReminderOn,
-                          onChanged: (bool value) {
-                            setState(() {
-                              isReminderOn = value;
-                              if (!isReminderOn) {
-                                isEditingReminder = false;
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    isReminderOn
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                reminderText.isEmpty
-                                    ? 'No reminder set'
-                                    : reminderText,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.edit, color: Colors.black),
-                                onPressed: isReminderOn ? _showReminderInputDialog : null,
-                              ),
-                            ],
-                          )
-                        : SizedBox(height: 10),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-
+              
               // Add Reminder Button
               Container(
                 width: 370,
-                height: 40,
+                height: 52,
                 decoration: BoxDecoration(
                   color: Color(0xFFF3F3E0),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: TextButton(
                   onPressed: () {
-                    // Add reminder logic here
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ReminderHabits()),
+                    );
                   },
                   child: Text(
                     "Add Reminder",

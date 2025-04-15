@@ -74,9 +74,9 @@ class _ResetWithEmailState extends State<ForgetPasswordPage> {
             children: [
               const SizedBox(height: 20),
               Image.asset(
-                'finalProject_img/homeScreen.png',
+                'finalProject_img/Splash1.jpeg',
                 height: 200,
-                width: 300,
+                width: 500,
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 80),
