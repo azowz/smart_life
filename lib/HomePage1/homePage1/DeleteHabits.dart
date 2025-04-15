@@ -4,8 +4,8 @@ import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
 
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/Statistic/calender_Page.dart';
-import 'package:final_project/Statistic/statistics_page.dart';
+import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
+import 'package:final_project/statistics_page.dart';
 import 'package:flutter/material.dart';
 
 class DeleteHabits extends StatefulWidget {

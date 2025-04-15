@@ -2,7 +2,7 @@ import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/Statistic/calender_Page.dart';
+import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
 import 'package:flutter/material.dart';
 
 
@@ -74,7 +74,7 @@ void _navigateToPage(int index, BuildContext context) {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: 'Statistics'),
-          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'AI Assistant'),
+          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'JARVIS'),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],

@@ -2,14 +2,14 @@ import 'package:final_project/HomePage1/homePage1/CustomHabit.dart';
 import 'package:final_project/HomePage1/homePage1/CustomTask.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
-import 'package:final_project/Statistic/calender_Page.dart';
+import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/Statistic/statistics_page.dart';
+import 'package:final_project/statistics_page.dart';
 
 class HomePageFirst extends StatefulWidget {
   const HomePageFirst({super.key});
@@ -479,7 +479,7 @@ Container(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: 'Statistics'),
-          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'AI Assistant'),
+          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'JARVIS'),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],

@@ -164,17 +164,20 @@ class HomePage extends StatelessWidget {
 
           // Sign In Button
           Positioned(
-            left: 100,
+            left: 20,
             top: 552,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF3F3E0),
-                fixedSize: const Size(100, 50),
+                fixedSize: const Size(160, 50),
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/signin');
               },
-              child: const Text('Sign In'),
+              child: Text('Sign In',
+              style: TextStyle(
+                        fontSize: 17,
+                      ),),
             ),
           ),
 
@@ -185,51 +188,99 @@ class HomePage extends StatelessWidget {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF1F6F9),
-                fixedSize: const Size(100, 50),
+                fixedSize: const Size(160, 50),
+                
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/signup');
               },
-              child: const Text('Sign Up'),
+              child:  Text('Sign Up',
+              style: TextStyle(
+                        fontSize: 17,
+                      ),),
             ),
           ),
 
           // Social Media Buttons
           
           Positioned(
-            left: 50,
+            left: 25,
+            top: 620,
+            child: SizedBox(
+              width: 370,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      color: Colors.white.withOpacity(0.5),
+                      thickness: 1,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      'OR',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      color: Colors.white.withOpacity(0.5),
+                      thickness: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Apple Button - now larger
+          Positioned(
+            left: 25,
             top: 655,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF1F6F9),
-                fixedSize: const Size(122, 50),
+                fixedSize: const Size(370, 52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              icon: const Icon(Icons.apple, color: Colors.black),
+              icon: const Icon(Icons.apple, color: Colors.black, size: 30,),
               label: const Text(
-                'Apple',
-                style: TextStyle(fontSize: 11),
+                'Continue with Apple',
+                style: TextStyle(fontSize: 14),
               ),
               onPressed: () {},
             ),
           ),
+
+          // Google Button - now larger
           Positioned(
-            left: 260,
-            top: 655,
+            left: 25,
+            top: 720,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF1F6F9),
-                fixedSize: const Size(122, 50),
+                fixedSize: const Size(370, 52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              icon: const Icon(Icons.g_mobiledata_rounded, color: Colors.red),
+              icon: const Icon(Icons.g_mobiledata_rounded, color: Colors.black, size: 35,),
               label: const Text(
-                'Google',
-                style: TextStyle(fontSize: 11),
+                'Continue with Google',
+                style: TextStyle(fontSize: 14),
               ),
               onPressed: () {},
             ),
           ),
         ],
       ),
+      
     );
   }
 }

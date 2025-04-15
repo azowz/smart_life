@@ -108,7 +108,7 @@ class _SchedulePageState extends State<SchedulePage> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.only(bottom: 10),
-                    hintText: "Enter Reminder ",
+                    hintText: "Enter ",
                     hintStyle: TextStyle(color: Colors.white54),
                   ),
                 ),

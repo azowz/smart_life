@@ -5,8 +5,8 @@ import 'package:final_project/HomePage1/homePage1/CustomTask.dart';
 import 'package:final_project/HomePage1/homePage1/DeleteTask.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/Statistic/calender_Page.dart';
-import 'package:final_project/Statistic/statistics_page.dart';
+import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
+import 'package:final_project/statistics_page.dart';
 import 'package:flutter/material.dart';
 
 class ViewAllTask extends StatefulWidget {
@@ -268,7 +268,7 @@ class _ViewAllTaskState extends State<ViewAllTask> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: 'Statistics'),
-          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'AI Assistant'),
+          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'JARVIS'),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],

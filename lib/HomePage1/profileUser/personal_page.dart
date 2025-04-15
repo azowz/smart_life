@@ -1,16 +1,17 @@
 import 'package:final_project/CreateAccForm/HomePage.dart';
+import 'package:final_project/HomePage1/Calnder/calendar_P.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:final_project/HomePage1/profileUser/HelpSupportsPage.dart';
 import 'package:final_project/HomePage1/profileUser/LanguagePage.dart';
 import 'package:final_project/HomePage1/profileUser/TermsAndPolicies.dart';
-import 'package:final_project/Statistic/calender_Page.dart';
+import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 
 import 'package:final_project/HomePage1/profileUser/EditProfile.dart';
-import 'package:final_project/Statistic/statistics_page.dart';
+import 'package:final_project/statistics_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';  // Firebase authentication package
 
 class PersonalPage extends StatefulWidget {
@@ -216,7 +217,7 @@ class _PersonalPageState extends State<PersonalPage> {
                 _buildListItem('Calendar', Icons.arrow_forward, () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CalendarPage()),
+                    MaterialPageRoute(builder: (context) => const calendar_P()),
                   );
                 }),
               ],
@@ -330,7 +331,7 @@ class _PersonalPageState extends State<PersonalPage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: 'Statistics'),
-          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'AI Assistant'),
+          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: 'JARVIS'),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
