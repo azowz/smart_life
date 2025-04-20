@@ -4,12 +4,12 @@ import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
 import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
 
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
-import 'package:final_project/statistics_page.dart';
+import 'package:final_project/HomePage1/statistics/statistics_page.dart';
 
 class HomePageFirst extends StatefulWidget {
   const HomePageFirst({super.key});
@@ -75,43 +75,8 @@ class _MyHomePageState extends State<HomePageFirst> {
   List<Map<String, dynamic>> _habits = [];
   bool _isChecked = false; // Track checkbox state
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchUsername();
-    _fetchHabits();
-  }
 
-  Future<void> _fetchUsername() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('CreateAccount')
-          .doc(user.uid)
-          .get();
-      setState(() {
-        _username = userDoc["username"] ?? "User";
-      });
-    }
-  }
-
-  Future<void> _fetchHabits() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      QuerySnapshot habitSnapshot = await FirebaseFirestore.instance
-          .collection('habits_user')
-          .where('user_id', isEqualTo: user.uid)
-          .get();
-      setState(() {
-        _habits = habitSnapshot.docs
-            .map((doc) => {
-                  "name": doc["name"] ?? "No Name",
-                  "details": doc["details"] ?? "No Details"
-                })
-            .toList();
-      });
-    }
-  }
+  
 
   double calculateCompletionPercentage() {
     return totalTasks == 0 ? 0 : (completedTasks / totalTasks) * 100;

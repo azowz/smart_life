@@ -1,8 +1,7 @@
-
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
-import 'package:final_project/statistics_page.dart';
+import 'package:final_project/HomePage1/statistics/statistics_page.dart';
 import 'package:flutter/material.dart';
 
 class AiAssistantPage extends StatefulWidget {
@@ -15,29 +14,22 @@ class AiAssistantPage extends StatefulWidget {
 class _AiAssistantPageState extends State<AiAssistantPage> {
   int _selectedIndex = 0;
   final TextEditingController _controller = TextEditingController();
-  List<String> messages = ['Hello, how can I help you?']; // Default message from AI
-  List<Map<String, dynamic>> savedChats = []; // List to save chats (with a name for each chat)
+  List<String> messages = ['Hello, how can I help you?'];
+  List<Map<String, dynamic>> savedChats = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String newChatName = '';
+  final TextEditingController _renameController = TextEditingController();
 
-  // Function to send text messages
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
       setState(() {
-        messages.add(_controller.text); // Add user's message to the list
-        // Only save chat when it's a new one
-        if (savedChats.isEmpty || savedChats.last['name'] != newChatName) {
-          savedChats.add({
-            'name': newChatName.isEmpty ? 'Chat ${savedChats.length + 1} ${messages[0]}' : newChatName,
-            'messages': List.from(messages), // Save the current chat with its name
-          });
-        }
-        _controller.clear(); // Clear the text field after sending
+        messages.add(_controller.text);
+        messages.add("I'm your AI assistant. How can I help you further?");
+        _controller.clear();
       });
     }
   }
 
-  // Function to show the "Send Photo" and "Add Voice" options
   void _showMoreOptions() {
     showModalBottomSheet(
       context: context,
@@ -51,15 +43,13 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                 leading: Icon(Icons.photo),
                 title: Text('Send Photo'),
                 onTap: () {
-                  // Implement photo sending functionality here
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 leading: Icon(Icons.mic),
-                title: Text('Add Voice'),
+                title: Text('Send Voice'),
                 onTap: () {
-                  // Implement voice functionality here
                   Navigator.pop(context);
                 },
               ),
@@ -70,7 +60,6 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
     );
   }
 
-  // Function to navigate between pages (BottomNavigationBar)
   void _navigateToPage(int index, BuildContext context) {
     Widget page;
 
@@ -93,40 +82,122 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
     }
     Navigator.of(context).pushReplacement(PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration: const Duration(milliseconds: 200), // Speed up the transition
+      transitionDuration: const Duration(milliseconds: 200),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(opacity: animation, child: child); // Smooth fade transition
+        return FadeTransition(opacity: animation, child: child);
       },
     ));
   }
 
-  // Function to show the saved chats in a menu
   void _showSavedChatsMenu() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return MenuSaveChat(savedChats: savedChats);
+        return MenuSaveChat(
+          savedChats: savedChats,
+          onNewChat: _startNewChat,
+          onChatSelected: (index) {
+            setState(() {
+              messages = List.from(savedChats[index]['messages']);
+            });
+            Navigator.pop(context);
+          },
+          onRenameChat: (index) {
+            _renameController.text = savedChats[index]['name'];
+            _showRenameDialog(index);
+          },
+          onDeleteChat: (index) {
+            _showDeleteConfirmation(index);
+          },
+        );
       },
     );
   }
 
-  // Function to create a new chat
   void _startNewChat() {
+    if (messages.isNotEmpty && (messages.length > 1 || messages[0] != 'Hello, how can I help you?')) {
+      _saveCurrentChat();
+    }
+    
     setState(() {
-      newChatName = 'Chat ${savedChats.length + 1}'; // Give the new chat a unique name
-      messages.clear(); // Clear the current messages for a new chat
+      messages = ['Hello, how can I help you?'];
+      newChatName = '';
     });
   }
 
-  // Function to clear chat and save
-  void _clearChatAndSave() {
-    setState(() {
-      savedChats.add({
-        'name': newChatName.isEmpty ? 'Chat ${savedChats.length + 1} ${messages[0]}' : newChatName,
-        'messages': List.from(messages),
+  void _saveCurrentChat() {
+    if (messages.isNotEmpty) {
+      setState(() {
+        savedChats.add({
+          'name': newChatName.isEmpty ? 
+            'Chat ${savedChats.length + 1}: ${messages.length > 1 ? messages[1] : messages[0]}' : 
+            newChatName,
+          'messages': List.from(messages),
+        });
       });
-      messages.clear(); // Clear the current chat after saving
-    });
+    }
+  }
+
+  void _showRenameDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Rename Chat'),
+          content: TextField(
+            controller: _renameController,
+            decoration: InputDecoration(hintText: 'Enter new chat name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  savedChats[index]['name'] = _renameController.text;
+                });
+                Navigator.pop(context);
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmation(int index) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete Chat'),
+          content: Text('Are you sure you want to delete this chat?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  savedChats.removeAt(index);
+                });
+                Navigator.pop(context);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Chat deleted')),
+                  );
+                }
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -152,7 +223,7 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                         width: 40,
                         height: 40,
                         child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.black), // Restoring the back arrow
+                          icon: const Icon(Icons.arrow_back, color: Colors.black),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -170,7 +241,7 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                       ),
                     ),
                     const Text(
-                      "AI JARVIS",
+                      "JARVIS",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -182,8 +253,8 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                         width: 40,
                         height: 40,
                         child: IconButton(
-                          icon: const Icon(Icons.menu, color: Colors.black), // Changed to menu icon
-                          onPressed: _showSavedChatsMenu, // Show saved chats menu
+                          icon: const Icon(Icons.menu, color: Colors.black),
+                          onPressed: _showSavedChatsMenu,
                           style: IconButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
@@ -212,7 +283,6 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
               ),
             ),
           ),
-          // Chat Input Section
           Positioned(
             bottom: 16,
             left: 16,
@@ -254,7 +324,6 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
               ),
             ),
           ),
-          // Messages List Section
           Positioned(
             top: 166 + 80,
             left: 16,
@@ -268,12 +337,12 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                   padding: const EdgeInsets.all(12),
                   alignment: index % 2 == 0 ? Alignment.centerLeft : Alignment.centerRight,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD9D9D9), // All messages have the same background color
+                    color: const Color(0xFFD9D9D9),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     messages[index],
-                    style: const TextStyle(color: Colors.black), // Text color set to black
+                    style: const TextStyle(color: Colors.black),
                   ),
                 );
               },
@@ -304,7 +373,19 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
 
 class MenuSaveChat extends StatelessWidget {
   final List<Map<String, dynamic>> savedChats;
-  const MenuSaveChat({super.key, required this.savedChats});
+  final VoidCallback onNewChat;
+  final Function(int) onChatSelected;
+  final Function(int) onRenameChat;
+  final Function(int) onDeleteChat;
+
+  const MenuSaveChat({
+    super.key, 
+    required this.savedChats,
+    required this.onNewChat,
+    required this.onChatSelected,
+    required this.onRenameChat,
+    required this.onDeleteChat,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -323,10 +404,31 @@ class MenuSaveChat extends StatelessWidget {
               itemCount: savedChats.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(savedChats[index]['name']), // Show the name of each saved chat
+                  title: Text(savedChats[index]['name']),
+                  trailing: PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert),
+                    onSelected: (value) {
+                      if (value == 'rename') {
+                        onRenameChat(index);
+                      } else if (value == 'delete') {
+                        onDeleteChat(index);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        PopupMenuItem(
+                          value: 'rename',
+                          child: Text('Rename'),
+                        ),
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete', style: TextStyle(color: Colors.red)),
+                        ),
+                      ];
+                    },
+                  ),
                   onTap: () {
-                    // Show the selected saved chat here
-                    Navigator.pop(context);
+                    onChatSelected(index);
                   },
                 );
               },
@@ -335,8 +437,8 @@ class MenuSaveChat extends StatelessWidget {
           SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
-              // Create a new chat and save the current one
-              Navigator.pop(context); // Close the menu
+              onNewChat();
+              Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,

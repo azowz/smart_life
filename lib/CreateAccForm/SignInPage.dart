@@ -1,7 +1,7 @@
+import 'package:final_project/ApiService.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -12,78 +12,52 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   bool _obscureText = true;
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
-
+  // Toggle password visibility
   void _togglePasswordVisibility() {
     setState(() {
       _obscureText = !_obscureText;
     });
   }
 
-  String? _validateEmail(String? value) {
+  // Validate the username or email input
+  String? _validateInput(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your username or email';
     }
     return null;
   }
 
-  Future<Map<String, dynamic>?> _fetchUserDetails() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user == null) return null;
-
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      if (userDoc.exists) {
-        return userDoc.data() as Map<String, dynamic>;
-      }
-    } catch (e) {
-      print("Error fetching user details: $e");
-    }
-    return null;
+  // Function to check if the string is a valid email
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+    );
+    return emailRegex.hasMatch(email);
   }
 
+  // Sign in method
   Future<void> _signIn() async {
     if (!_formKey.currentState!.validate()) return;
 
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+    String input = _usernameController.text.trim();  // input from user
+    String password = _passwordController.text.trim();
 
-      print("User signed in successfully!");
+    // Call ApiService to sign in using either email or username
+    String result = await ApiService.signInByEmailOrUsername(input, password);
 
-      Map<String, dynamic>? userDetails = await _fetchUserDetails();
-      if (userDetails != null) {
-        print("User Name: ${userDetails['name']}");
-      } else {
-        print("Failed to retrieve user details.");
-      }
-
-      // Navigate to HomePageFirst on successful login
+    // Check the result and navigate accordingly
+    if (result == 'Success') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePageFirst()),
       );
-    } on FirebaseAuthException catch (e) {
-      String message = 'Login failed. Please try again.';
-      if (e.code == 'user-not-found') {
-        message = 'No user found with this email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Incorrect password.';
-      }
-
-      // Show error message
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+        SnackBar(content: Text(result)),
       );
     }
   }
@@ -123,11 +97,10 @@ class _SignInPageState extends State<SignInPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFormField(
-                      controller: _emailController,
-                      validator: _validateEmail,
-                      keyboardType: TextInputType.emailAddress,
+                      controller: _usernameController,
+                      validator: _validateInput,
                       decoration: const InputDecoration(
-                        labelText: 'Email',
+                        labelText: 'Username or Email',
                         filled: true,
                         fillColor: Color(0xFFF1F6F9),
                       ),
@@ -183,7 +156,7 @@ class _SignInPageState extends State<SignInPage> {
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                        onPressed: _signIn, // Call Firebase sign-in function
+                        onPressed: _signIn,
                         child: const Text(
                           "Log In",
                           style: TextStyle(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class calendar_P extends StatefulWidget {
-  const calendar_P({Key? key}) : super(key: key);
+  const calendar_P({super.key});
 
   @override
   State<calendar_P> createState() => _CalendarScreenState();
