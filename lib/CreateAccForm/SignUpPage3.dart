@@ -1,16 +1,12 @@
-
-
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:final_project/ApiService.dart'; // Import your ApiService
 
 class SignUpPage3 extends StatefulWidget {
   final String username;
   final Set<String> selectedHabits;
 
-  const SignUpPage3(
-      {super.key, required this.username, required this.selectedHabits});
+  const SignUpPage3({super.key, required this.username, required this.selectedHabits});
 
   @override
   _SignUpPage3State createState() => _SignUpPage3State();
@@ -19,17 +15,61 @@ class SignUpPage3 extends StatefulWidget {
 class _SignUpPage3State extends State<SignUpPage3> {
   bool _agreeToTerms = false;
   bool _subscribeToEmails = false;
+  String usernameFromDB = ""; // To hold the username fetched from DB
+  Set<String> habitsFromDB = {}; // To hold the habits fetched from DB
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  // Fetch user data (username and habits) from the backend
+  Future<void> _fetchUserData() async {
+  try {
+    final userData = await ApiService.fetchUserData(widget.username); // Pass username here
+
+    if (userData.isNotEmpty) {
+      setState(() {
+        usernameFromDB = userData['username'] ?? ''; // Default to empty string if null
+        habitsFromDB = Set<String>.from(userData['habits'] ?? []); // Default to empty list if null
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No user data found or user has no habits')),
+      );
+    }
+  } catch (e) {
+    // In case of an error, handle the exception and show a SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to load user data: $e')),
+    );
+  }
+}
+
 
   void _changeAvatar() {
     // Code to change avatar from the gallery
   }
 
-  void _createAccount() {
-    // Save information and navigate to HomePageC
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const HomePageFirst()),
+  void _createAccount() async {
+    bool success = await ApiService.createAccount(
+      username: widget.username,
+      habits: habitsFromDB.toList(),
+      agreeToTerms: _agreeToTerms,
+      subscribeToEmails: _subscribeToEmails,
     );
+
+    if (success) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePageFirst()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Account creation failed. Please try again.')),
+      );
+    }
   }
 
   Widget habitContainer(String habit) {
@@ -57,7 +97,7 @@ class _SignUpPage3State extends State<SignUpPage3> {
         icon = Icons.pool;
         break;
       default:
-        icon = Icons.help_outline; // Default icon in case of an unknown habit
+        icon = Icons.help_outline; // Default icon for unknown habits
     }
 
     return Container(
@@ -94,9 +134,7 @@ class _SignUpPage3State extends State<SignUpPage3> {
         title: const Center(
           child: Text(
             'Create Account',
-            style: TextStyle(
-              fontSize: 20,
-            ),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ),
@@ -131,11 +169,8 @@ class _SignUpPage3State extends State<SignUpPage3> {
               ),
               const SizedBox(height: 10),
               Text(
-                widget.username,
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
+                usernameFromDB.isNotEmpty ? usernameFromDB : widget.username,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 80),
               Container(
@@ -150,18 +185,19 @@ class _SignUpPage3State extends State<SignUpPage3> {
                   children: [
                     const Text(
                       'Your Habits are:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 20.0,
                       runSpacing: 20.0,
-                      children: widget.selectedHabits.map((habit) {
-                        return habitContainer(habit);
-                      }).toList(),
+                      children: habitsFromDB.isNotEmpty
+                          ? habitsFromDB.map((habit) {
+                              return habitContainer(habit);
+                            }).toList()
+                          : widget.selectedHabits.map((habit) {
+                              return habitContainer(habit);
+                            }).toList(),
                     ),
                   ],
                 ),

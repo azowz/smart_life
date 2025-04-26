@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/ApiService.dart';
 import 'package:final_project/CreateAccForm/SignUpPage3.dart';
+
 import 'package:flutter/material.dart';
 
 class SignUpPage2 extends StatefulWidget {
@@ -25,28 +26,33 @@ class _SignUpPage2State extends State<SignUpPage2> {
   }
 
   void _submitForm() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference habitsRef = firestore.collection('habits_user');
-
-    for (String habit in _selectedHabits) {
-      await habitsRef.add({
-        'username': widget.username,
-        'nameHabits': habit,
-        'date': DateTime.now().toString(),
-        'details': "265", // Placeholder, update as needed
-        'goal': 255, // Placeholder, update as needed
-      });
+    if (_selectedHabits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select at least one habit')),
+      );
+      return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SignUpPage3(
-          username: widget.username,
-          selectedHabits: _selectedHabits,
-        ),
-      ),
+    bool success = await ApiService.addUserHabits(
+      username: widget.username,
+      habits: _selectedHabits.toList(),
     );
+
+    if (success) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUpPage3(
+            username: widget.username,
+            selectedHabits: _selectedHabits,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save habits. Please try again.')),
+      );
+    }
   }
 
   Widget habitContainer(IconData icon, String label) {

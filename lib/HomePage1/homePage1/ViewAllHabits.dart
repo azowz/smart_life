@@ -1,4 +1,5 @@
 import 'package:final_project/HomePage1/AiChat/ai_assistant_page.dart';
+import 'package:final_project/HomePage1/homePage1/AddHabits.dart';
 
 import 'package:final_project/HomePage1/homePage1/CustomHabit.dart';
 import 'package:final_project/HomePage1/homePage1/DeleteHabits.dart';
@@ -132,7 +133,7 @@ class _ViewAllHabitsState extends State<ViewAllHabits> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const CustomHabit()),
+                  MaterialPageRoute(builder: (_) => const AddHabits()),
                 );
               },
             ),

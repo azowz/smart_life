@@ -69,10 +69,10 @@ void _navigateToPage(int index, BuildContext context) {
 
 class _MyHomePageState extends State<HomePageFirst> {
   int _selectedIndex = 0;
-  String _username = "";
+  final String _username = "";
   int completedTasks = 0;
   int totalTasks = 5;
-  List<Map<String, dynamic>> _habits = [];
+  final List<Map<String, dynamic>> _habits = [];
   bool _isChecked = false; // Track checkbox state
 
 
