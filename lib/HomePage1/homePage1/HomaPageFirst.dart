@@ -69,7 +69,7 @@ void _navigateToPage(int index, BuildContext context) {
 
 class _MyHomePageState extends State<HomePageFirst> {
   int _selectedIndex = 0;
-  final String _username = "";
+  final String _username = "user5";
   int completedTasks = 0;
   int totalTasks = 5;
   final List<Map<String, dynamic>> _habits = [];
@@ -372,7 +372,7 @@ Container(
                 ),
               ),
               const Text(
-                'Right the task here',
+                'Take medication',
                 style: TextStyle(
                   color: Colors.black, // Text color black
                 ),

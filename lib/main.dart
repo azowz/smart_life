@@ -1,8 +1,11 @@
+import 'package:final_project/CreateAccForm/ChangePassword.dart';
+import 'package:final_project/CreateAccForm/CheckPoster.dart';
 import 'package:final_project/CreateAccForm/ForgetPasswordPage.dart';
 import 'package:final_project/CreateAccForm/SignInPage.dart';
 import 'package:final_project/CreateAccForm/SignUpPage.dart';
 import 'package:final_project/CreateAccForm/SplashPage.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
+import 'package:final_project/HomePage1/profileUser/personal_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
 import 'package:flutter/material.dart';
@@ -37,6 +40,9 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignUpPage(),
         '/homePageC': (context) => const HomePageFirst(),
         '/forgetpassword': (context) => const ForgetPasswordPage(),
+        '/PersonalPage': (context) => const PersonalPage(), 
+        '/checkposter': (context) => const CheckPoster(),
+        '/changepassword': (context) => const ChangePassword(),  
 
       },
     );

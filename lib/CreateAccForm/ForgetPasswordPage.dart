@@ -1,50 +1,16 @@
 import 'package:final_project/CreateAccForm/SignInPage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({super.key});
 
   @override
-  _ResetWithEmailState createState() => _ResetWithEmailState();
+  _ForgetPasswordPageState createState() => _ForgetPasswordPageState();
 }
 
-class _ResetWithEmailState extends State<ForgetPasswordPage> {
+class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<void> _checkEmailAndSendReset() async {
-    String email = _emailController.text.trim();
-
-    try {
-      // Check if email exists in Firestore
-      var querySnapshot = await _firestore
-          .collection('CreateAccount')
-          .where('email', isEqualTo: email)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        // Email exists, send reset email
-        await _auth.sendPasswordResetEmail(email: email);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Password reset email sent! Check your inbox.')),
-        );
-      } else {
-        // Email does not exist
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('This email is not registered.')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +20,6 @@ class _ResetWithEmailState extends State<ForgetPasswordPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Navigate to the SignInPage when the back arrow is pressed
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const SignInPage()),
@@ -119,7 +84,12 @@ class _ResetWithEmailState extends State<ForgetPasswordPage> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    _checkEmailAndSendReset();
+                    // Pass email to CheckPoster page
+                    Navigator.pushNamed(
+                      context,
+                      '/checkposter', // Ensure this route is defined in your routes
+                      arguments: _emailController.text, // Pass the email here
+                    );
                   }
                 },
                 child: const Text(
@@ -133,7 +103,6 @@ class _ResetWithEmailState extends State<ForgetPasswordPage> {
               const SizedBox(height: 20),
               InkWell(
                 onTap: () {
-                  // Navigate to the SignInPage when the text is tapped
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const SignInPage()),

@@ -126,14 +126,14 @@ class _SignInPageState extends State<SignInPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text("Forgot password? ",
+                          const Text(" ",
                               style: TextStyle(color: Colors.white)),
                           GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(context, '/forgetpassword');
                             },
                             child: const Text(
-                              "Click Here",
+                              "Forgot password?",
                               style: TextStyle(
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,

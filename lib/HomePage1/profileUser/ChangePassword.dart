@@ -8,7 +8,7 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-   final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _changePasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscureText1 = true;
@@ -34,7 +34,7 @@ class _ChangePasswordState extends State<ChangePassword> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/checkposter');
+            Navigator.pushNamed(context, '/PersonalPage');
           },
         ),
         title: const Text('ChangePassword'),

@@ -2,6 +2,7 @@ import 'package:final_project/CreateAccForm/HomePage.dart';
 import 'package:final_project/HomePage1/Calnder/calendar_P.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllHabits.dart';
 import 'package:final_project/HomePage1/homePage1/ViewAllTask.dart';
+import 'package:final_project/HomePage1/profileUser/ChangePassword.dart';
 import 'package:final_project/HomePage1/profileUser/HelpSupportsPage.dart';
 import 'package:final_project/HomePage1/profileUser/LanguagePage.dart';
 import 'package:final_project/HomePage1/profileUser/TermsAndPolicies.dart';
@@ -120,7 +121,13 @@ class _PersonalPageState extends State<PersonalPage> {
                         height: 40,
                         child: IconButton(
                           icon: const Icon(Icons.settings, color: Colors.black),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ChangePassword()),
+                            );
+                          },
                           style: IconButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
