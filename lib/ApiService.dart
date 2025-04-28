@@ -10,7 +10,7 @@ class ApiService {
   }
 
   static void initialize() {
-    setAuthToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2giLCJmcmVzaCI6dHJ1ZSwiZXhwIjoxNzQ1ODYwMzM0LCJzY29wZSI6ImFjY2Vzc190b2tlbiJ9.8TrGsWPAlm7MvbyXjyWqfpYyPH3U3zG1mTvn-vi5tT4');
+    setAuthToken('YOur_token_here');
   }
 
   static bool _isValidEmail(String email) {
