@@ -1,10 +1,8 @@
-import 'package:final_project/ApiService.dart';
-import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/HomePage1/profileUser/personal_page.dart';
+import 'package:final_project/HomePage1/Calnder/calender_Page.dart';
 import 'package:final_project/HomePage1/statistics/statistics_page.dart';
 import 'package:flutter/material.dart';
-
 
 class AiAssistantPage extends StatefulWidget {
   const AiAssistantPage({super.key});
@@ -16,114 +14,22 @@ class AiAssistantPage extends StatefulWidget {
 class _AiAssistantPageState extends State<AiAssistantPage> {
   int _selectedIndex = 0;
   final TextEditingController _controller = TextEditingController();
-List<Map<String, dynamic>> messages = [
-  {'text': 'Hello, how can I help you?', 'isUser': false, 'timestamp': DateTime.now()}
-];
+  List<String> messages = ['Hello, how can I help you?'];
   List<Map<String, dynamic>> savedChats = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String newChatName = '';
   final TextEditingController _renameController = TextEditingController();
-  String? currentConversationId;
-  bool isLoading = false;
 
-// Update your message sending and receiving logic
-Future<void> _sendMessage() async {
-  if (_controller.text.isEmpty) return;
-
-  // Create the user message object
-  final userMessage = {
-    'text': _controller.text,
-    'isUser': true,
-    'timestamp': DateTime.now().toIso8601String()
-  };
-
-  setState(() {
-    messages.add(userMessage);
-    isLoading = true;
-    _controller.clear();
-  });
-
-  try {
-    // Send just the text to the API
-    final response = await ApiService.sendChatMessage(
-      message: _controller.text,  // Send the raw text, not the map
-      conversationId: currentConversationId,
-      userId: 'current_user_id', // Replace with actual user ID
-    );
-
-    // Handle the API response
-    setState(() {
-      messages.add({
-        'text': response['message'] ?? "I didn't get a response",
-        'isUser': false,
-        'timestamp': DateTime.now().toIso8601String()
-      });
-      currentConversationId = response['conversation_id'] ?? currentConversationId;
-      isLoading = false;
-    });
-  } catch (e) {
-    setState(() {
-      messages.add({
-        'text': "Error: ${e.toString()}",
-        'isUser': false,
-        'timestamp': DateTime.now().toIso8601String()
-      });
-      isLoading = false;
-    });
-  }
-}
-
-  Future<void> _startNewChat() async {
-    if (messages.length > 1 || 
-        (messages.isNotEmpty && messages[0]['text'] != 'Hello, how can I help you?')) {
-      _saveCurrentChat();
-    }
-
-    try {
-      final response = await ApiService.startNewConversation(
-        userId: 'current_user_id',
-      );
-
+  // New _sendMessage function
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
       setState(() {
-        messages = [{'text': 'Hello, how can I help you?', 'isUser': false}];
-        currentConversationId = response['conversation_id'];
-        newChatName = '';
+        messages.add(_controller.text);  // Add the user message
+        messages.add("I'm your AI assistant. How can I help you further?");  // AI's response
+        _controller.clear();  // Clear the input field
       });
-    } catch (e) {
-      print('Error starting new conversation: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to start new conversation')),
-      );
     }
   }
-
-Future<void> _loadConversation(String conversationId) async {
-  setState(() => isLoading = true);
-  
-  try {
-    final conversation = await ApiService.getConversation(conversationId);
-    
-    setState(() {
-      messages = (conversation['messages'] as List).map((msg) {
-        return {
-          'text': msg['content'] ?? msg['text'] ?? '',
-          'isUser': msg['sender'] == 'user',
-          'timestamp': msg['timestamp'] != null 
-             ? DateTime.parse(msg['timestamp']) 
-             : DateTime.now()
-        };
-      }).toList();
-      
-      currentConversationId = conversationId;
-      isLoading = false;
-    });
-  } catch (e) {
-    setState(() => isLoading = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: ${e.toString()}'))
-    );
-  }
-}
 
   void _showMoreOptions() {
     showModalBottomSheet(
@@ -133,18 +39,17 @@ Future<void> _loadConversation(String conversationId) async {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.photo),
-                title: const Text('Send Photo'),
+                leading: Icon(Icons.photo),
+                title: Text('Send Photo'),
                 onTap: () {
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.mic),
-                title: const Text('Send Voice'),
+                leading: Icon(Icons.mic),
+                title: Text('Send Voice'),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -193,7 +98,9 @@ Future<void> _loadConversation(String conversationId) async {
           savedChats: savedChats,
           onNewChat: _startNewChat,
           onChatSelected: (index) {
-            _loadConversation(savedChats[index]['id']);
+            setState(() {
+              messages = List.from(savedChats[index]['messages']);
+            });
             Navigator.pop(context);
           },
           onRenameChat: (index) {
@@ -208,13 +115,23 @@ Future<void> _loadConversation(String conversationId) async {
     );
   }
 
+  void _startNewChat() {
+    if (messages.isNotEmpty && (messages.length > 1 || messages[0] != 'Hello, how can I help you?')) {
+      _saveCurrentChat();
+    }
+    
+    setState(() {
+      messages = ['Hello, how can I help you?'];
+      newChatName = '';
+    });
+  }
+
   void _saveCurrentChat() {
     if (messages.isNotEmpty) {
       setState(() {
         savedChats.add({
-          'id': currentConversationId,
           'name': newChatName.isEmpty ? 
-            'Chat ${savedChats.length + 1}: ${messages.length > 1 ? messages[1]['text'] : messages[0]['text']}' : 
+            'Chat ${savedChats.length + 1}: ${messages.length > 1 ? messages[1] : messages[0]}' : 
             newChatName,
           'messages': List.from(messages),
         });
@@ -227,15 +144,15 @@ Future<void> _loadConversation(String conversationId) async {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Rename Chat'),
+          title: Text('Rename Chat'),
           content: TextField(
             controller: _renameController,
-            decoration: const InputDecoration(hintText: 'Enter new chat name'),
+            decoration: InputDecoration(hintText: 'Enter new chat name'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -244,7 +161,7 @@ Future<void> _loadConversation(String conversationId) async {
                 });
                 Navigator.pop(context);
               },
-              child: const Text('Save'),
+              child: Text('Save'),
             ),
           ],
         );
@@ -257,12 +174,12 @@ Future<void> _loadConversation(String conversationId) async {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Chat'),
-          content: const Text('Are you sure you want to delete this chat?'),
+          title: Text('Delete Chat'),
+          content: Text('Are you sure you want to delete this chat?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -272,22 +189,16 @@ Future<void> _loadConversation(String conversationId) async {
                 Navigator.pop(context);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Chat deleted')),
+                    SnackBar(content: Text('Chat deleted')),
                   );
                 }
               },
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _startNewChat();
   }
 
   @override
@@ -392,7 +303,6 @@ Future<void> _loadConversation(String conversationId) async {
                         hintText: 'Type your message...',
                         border: InputBorder.none,
                       ),
-                      onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -405,12 +315,10 @@ Future<void> _loadConversation(String conversationId) async {
                   ),
                   const SizedBox(width: 10),
                   GestureDetector(
-                    onTap: _sendMessage,
-                    child: CircleAvatar(
+                    onTap: _sendMessage,  // Use the _sendMessage method here
+                    child: const CircleAvatar(
                       backgroundColor: Colors.white,
-                      child: isLoading 
-                          ? const CircularProgressIndicator()
-                          : const Icon(Icons.send, color: Colors.black),
+                      child: Icon(Icons.send, color: Colors.black),
                     ),
                   ),
                 ],
@@ -425,25 +333,17 @@ Future<void> _loadConversation(String conversationId) async {
             child: ListView.builder(
               itemCount: messages.length,
               itemBuilder: (context, index) {
-                final message = messages[index];
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   padding: const EdgeInsets.all(12),
-                  alignment: message['isUser'] ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: index % 2 == 0 ? Alignment.centerLeft : Alignment.centerRight,
                   decoration: BoxDecoration(
-                    color: message['isUser'] ? const Color(0xFF4A80F0) : const Color(0xFFD9D9D9),
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(12),
-                      topRight: const Radius.circular(12),
-                      bottomLeft: message['isUser'] ? const Radius.circular(12) : Radius.zero,
-                      bottomRight: message['isUser'] ? Radius.zero : const Radius.circular(12),
-                    ),
+                    color: const Color(0xFFD9D9D9),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    message['text'],
-                    style: TextStyle(
-                      color: message['isUser'] ? Colors.white : Colors.black,
-                    ),
+                    messages[index],
+                    style: const TextStyle(color: Colors.black),
                   ),
                 );
               },
@@ -497,57 +397,32 @@ class MenuSaveChat extends StatelessWidget {
         children: [
           const Text(
             "Saved Chats",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: savedChats.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(savedChats[index]['name']),
-                  trailing: PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: (value) {
-                      if (value == 'rename') {
-                        onRenameChat(index);
-                      } else if (value == 'delete') {
-                        onDeleteChat(index);
-                      }
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        const PopupMenuItem(
-                          value: 'rename',
-                          child: Text('Rename'),
-                        ),
-                        const PopupMenuItem(
-                          value: 'delete',
-                          child: Text('Delete', style: TextStyle(color: Colors.red)),
-                        ),
-                      ];
-                    },
+          ...List.generate(savedChats.length, (index) {
+            return ListTile(
+              title: Text(savedChats[index]['name']),
+              onTap: () => onChatSelected(index),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () => onRenameChat(index),
                   ),
-                  onTap: () {
-                    onChatSelected(index);
-                  },
-                );
-              },
-            ),
-          ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => onDeleteChat(index),
+                  ),
+                ],
+              ),
+            );
+          }),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: () {
-              onNewChat();
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text('New Chat'),
+            onPressed: onNewChat,
+            child: const Text('Start New Chat'),
           ),
         ],
       ),

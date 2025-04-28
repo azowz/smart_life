@@ -10,7 +10,7 @@ class ApiService {
   }
 
   static void initialize() {
-    setAuthToken('your_token_here');
+    setAuthToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2giLCJmcmVzaCI6dHJ1ZSwiZXhwIjoxNzQ1ODYwMzM0LCJzY29wZSI6ImFjY2Vzc190b2tlbiJ9.8TrGsWPAlm7MvbyXjyWqfpYyPH3U3zG1mTvn-vi5tT4');
   }
 
   static bool _isValidEmail(String email) {
@@ -525,6 +525,41 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<Map<String, dynamic>> sendChatMessageWithUser({
+  required String message,
+  required String userId,
+  String? conversationId,
+}) async {
+  final url = Uri.parse('$baseUrl/ai/chat/');  // Ensure the endpoint is correct for sending chat messages.
+
+  final data = {
+    'message': message,
+    'user_id': userId,  // User ID to link the chat message
+    if (conversationId != null) 'conversation_id': conversationId,  // Optional: If conversation exists
+  };
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        if (_authToken != null) 'Authorization': 'Bearer $_authToken',  // Include the auth token for authorization
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);  // Successfully sent the message
+    } else {
+      throw Exception('Failed to get AI response: ${response.statusCode}');  // Handle errors
+    }
+  } catch (e) {
+    print('Error in sendChatMessageWithUser: $e');
+    throw Exception('Failed to connect to AI service');
+  }
+}
+
 }
 
 
