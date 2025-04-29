@@ -1,133 +1,120 @@
 // lib/api/api_client.dart
+
 import 'dart:convert';
+import 'package:final_project/api/services/auth_service.dart';
 import 'package:http/http.dart' as http;
+import '../api/api_config.dart';
 
 class ApiClient {
-  static String baseUrl =
-      'http://10.0.2.2:8000'; // Default URL for Android emulator
-  static String? _authToken;
+  static String baseUrl = 'http://10.0.2.2:8000';
 
-  // Initialize API client with base URL and optional token
-  static void initialize(String url, {String? authToken}) {
+  static void initialize({required String url}) {
     baseUrl = url;
-    _authToken = authToken;
   }
 
-  // Set authentication token
-  static void setAuthToken(String token) {
-    _authToken = token;
-  }
+  static bool get isAuthenticated => ApiConfig.authToken != null;
 
-  // Clear authentication token (for logout)
-  static void clearAuthToken() {
-    _authToken = null;
-  }
+  static Map<String, String> _getHeaders(
+      {bool withAuth = true, bool useFormEncoding = false}) {
+    final headers = <String, String>{};
 
-  // Check if user is authenticated
-  static bool get isAuthenticated => _authToken != null;
-
-  // Create headers with optional auth token
-  static Map<String, String> _getHeaders({bool withAuth = true}) {
-    final headers = {'Content-Type': 'application/json'};
-    if (withAuth && _authToken != null) {
-      headers['Authorization'] = 'Bearer $_authToken';
+    if (useFormEncoding) {
+      headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    } else {
+      headers['Content-Type'] = 'application/json';
     }
+
+    if (withAuth && ApiConfig.authToken != null) {
+      headers['Authorization'] = 'Bearer ${ApiConfig.authToken}';
+    }
+
     return headers;
   }
 
-  // GET request
   static Future<http.Response> get(String endpoint,
       {bool withAuth = true}) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _getHeaders(withAuth: withAuth),
-      );
-      return response;
-    } catch (e) {
-      print('GET request error: $e');
-      throw Exception('Network error: $e');
-    }
+    return _sendRequest(() => http.get(Uri.parse('$baseUrl$endpoint'),
+        headers: _getHeaders(withAuth: withAuth)));
   }
 
-  // POST request
-  static Future<http.Response> post(
-    String endpoint,
-    dynamic body, {
-    bool withAuth = true,
-    bool useFormEncoding = false,
-  }) async {
-    try {
-      final headers = _getHeaders(withAuth: withAuth);
+  static Future<http.Response> post(String endpoint, dynamic body,
+      {bool withAuth = true, bool useFormEncoding = false}) async {
+    final headers =
+        _getHeaders(withAuth: withAuth, useFormEncoding: useFormEncoding);
+    final requestBody = useFormEncoding ? body : jsonEncode(body);
 
-      if (useFormEncoding) {
-        headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    return _sendRequest(() => http.post(Uri.parse('$baseUrl$endpoint'),
+        headers: headers, body: requestBody));
+  }
+
+  static Future<http.Response> put(String endpoint, dynamic body,
+      {bool withAuth = true}) async {
+    final headers = _getHeaders(withAuth: withAuth);
+    final requestBody = jsonEncode(body);
+
+    return _sendRequest(() => http.put(Uri.parse('$baseUrl$endpoint'),
+        headers: headers, body: requestBody));
+  }
+
+  static Future<http.Response> patch(String endpoint, dynamic body,
+      {bool withAuth = true}) async {
+    final headers = _getHeaders(withAuth: withAuth);
+    final requestBody = jsonEncode(body);
+
+    return _sendRequest(() => http.patch(Uri.parse('$baseUrl$endpoint'),
+        headers: headers, body: requestBody));
+  }
+
+  static Future<http.Response> delete(String endpoint,
+      {bool withAuth = true}) async {
+    return _sendRequest(() => http.delete(Uri.parse('$baseUrl$endpoint'),
+        headers: _getHeaders(withAuth: withAuth)));
+  }
+
+  static Future<http.Response> _sendRequest(
+      Future<http.Response> Function() requestFn) async {
+    try {
+      http.Response response = await requestFn();
+
+      if (response.statusCode == 401) {
+        print('🔁 Token expired or unauthorized. Trying refresh...');
+
+        // Attempt token refresh
+        final refreshed = await _attemptRefreshToken();
+
+        if (refreshed) {
+          print('✅ Token refreshed. Retrying original request...');
+          response = await requestFn();
+        } else {
+          print('❌ Unable to refresh token. Logging out.');
+          ApiConfig.clearTokens();
+          throw Exception('Unauthorized. Please login again.');
+        }
       }
 
-      final response = await http.post(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: headers,
-        body: useFormEncoding ? body : jsonEncode(body),
-      );
       return response;
     } catch (e) {
-      print('POST request error: $e');
+      print('❌ Network error: $e');
       throw Exception('Network error: $e');
     }
   }
 
-  // PUT request
-  static Future<http.Response> put(
-    String endpoint,
-    dynamic body, {
-    bool withAuth = true,
-  }) async {
+  static Future<bool> _attemptRefreshToken() async {
     try {
-      final response = await http.put(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _getHeaders(withAuth: withAuth),
-        body: jsonEncode(body),
-      );
-      return response;
-    } catch (e) {
-      print('PUT request error: $e');
-      throw Exception('Network error: $e');
-    }
-  }
+      final refresh = ApiConfig.refreshToken;
+      if (refresh == null) return false;
 
-  // PATCH request
-  static Future<http.Response> patch(
-    String endpoint,
-    dynamic body, {
-    bool withAuth = true,
-  }) async {
-    try {
-      final response = await http.patch(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _getHeaders(withAuth: withAuth),
-        body: jsonEncode(body),
-      );
-      return response;
-    } catch (e) {
-      print('PATCH request error: $e');
-      throw Exception('Network error: $e');
-    }
-  }
+      final refreshedData = await AuthService.refreshToken();
 
-  // DELETE request
-  static Future<http.Response> delete(
-    String endpoint, {
-    bool withAuth = true,
-  }) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _getHeaders(withAuth: withAuth),
-      );
-      return response;
+      ApiConfig.authToken = refreshedData['access_token'];
+      if (refreshedData['refresh_token'] != null) {
+        ApiConfig.refreshToken = refreshedData['refresh_token'];
+      }
+
+      return true;
     } catch (e) {
-      print('DELETE request error: $e');
-      throw Exception('Network error: $e');
+      print('❌ Failed to refresh token: $e');
+      return false;
     }
   }
 }

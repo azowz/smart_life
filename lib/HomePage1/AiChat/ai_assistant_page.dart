@@ -37,10 +37,10 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
 
   void _initializeChat() {
     setState(() {
-      // Create initial greeting message from AI
+      // Create initial greeting message from AI - FIXED: use valid user ID
       messages = [
         ChatMessage(
-          userId: 0, // System user ID for AI
+          userId: _userId, // Using current user ID instead of 0
           content: 'Hello, I\'m JARVIS. How can I help you today?',
           isAiResponse: true,
           createdAt: DateTime.now(),
@@ -56,15 +56,22 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         _isLoading = true;
       });
 
+      print('Loading saved chats for user $_userId');
+
       // Get user's previous interactions from API
       final interactions =
           await AIInteractionService.getUserInteractions(_userId);
 
+      print('Loaded ${interactions.length} interactions');
+
       setState(() {
         savedChats = interactions.map<Map<String, dynamic>>((interaction) {
+          // Use the correct field names from the backend schema
           return {
-            'id': interaction['id'],
-            'name': interaction['title'] ?? 'Unnamed Chat',
+            'id': interaction[
+                'interaction_id'], // Field from AIInteractionResponse
+            'name': interaction['prompt'] ??
+                'Unnamed Chat', // Use prompt instead of title
             'timestamp': interaction['created_at'],
           };
         }).toList();
@@ -74,6 +81,7 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
       setState(() {
         _isLoading = false;
       });
+      print('Error loading saved chats: $e');
       _showSnackBar('Failed to load chats: $e');
     }
   }
@@ -85,8 +93,9 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         _isLoading = true;
       });
 
+      print('Loading chat history for interaction $interactionId');
+
       // Get messages for this interaction from API
-      // Using the exact path from your chat_message_service.dart
       final response = await ChatMessageService.getMessagesByEntity(
           'ai_interaction', interactionId,
           skip: 0, limit: 100);
@@ -96,7 +105,7 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         // Convert API response to ChatMessage objects
         chatHistory.add(ChatMessage(
           messageId: msg['message_id'],
-          userId: msg['user_id'] ?? 0,
+          userId: msg['user_id'] ?? _userId, // Default to current user if null
           content: msg['content'] ?? '',
           isAiResponse: msg['is_ai_response'] ?? false,
           createdAt: msg['created_at'] != null
@@ -112,15 +121,19 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         _currentInteractionId = interactionId;
         _isLoading = false;
       });
+
+      print(
+          'Loaded ${chatHistory.length} messages for interaction $interactionId');
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
+      print('Error loading chat history: $e');
       _showSnackBar('Failed to load chat history: $e');
     }
   }
 
-  // Send message to AI and get response
+  // Send message to AI and get response - FIXED: uses valid user IDs for AI messages
   Future<void> _sendMessage() async {
     if (_controller.text.isEmpty) return;
 
@@ -147,15 +160,22 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
     try {
       // Create a new interaction if this is a new chat
       if (_currentInteractionId == null) {
-        final interaction = await AIInteractionService.createInteraction({
-          'user_id': _userId,
-          'title': userMessage.length > 30
-              ? '${userMessage.substring(0, 30)}...'
-              : userMessage,
-          'status': 'active',
-        });
+        print('Creating new AI interaction');
 
-        _currentInteractionId = interaction['id'];
+        // Create proper interaction data matching backend schema
+        final interactionData = {
+          'user_id': _userId,
+          'prompt': userMessage, // Required field in schema
+          'interaction_type': 'chat', // Required enum value
+        };
+
+        final interaction =
+            await AIInteractionService.createInteraction(interactionData);
+
+        print('Created interaction: $interaction');
+
+        // Get the interaction_id field name from backend
+        _currentInteractionId = interaction['interaction_id'];
 
         // Update the user message with the entity ID
         final updatedUserMessage = userChatMessage.copyWith(
@@ -163,31 +183,57 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
           relatedEntityType: 'ai_interaction',
         );
 
-        // Save user message to database using the exact path from your service
-        await ChatMessageService.createChatMessage(updatedUserMessage.toJson());
+        // Save user message to database with proper schema fields
+        final messageData = {
+          'user_id': updatedUserMessage.userId,
+          'content': updatedUserMessage.content,
+          'is_ai_response': updatedUserMessage.isAiResponse,
+          'related_entity_id': updatedUserMessage.relatedEntityId,
+          'related_entity_type': updatedUserMessage.relatedEntityType,
+        };
+
+        await ChatMessageService.createChatMessage(messageData);
 
         // Add this chat to saved chats
         setState(() {
           savedChats.add({
             'id': _currentInteractionId,
-            'name': interaction['title'],
+            'name': interaction['prompt'] ?? userMessage,
             'timestamp': DateTime.now().toIso8601String(),
           });
         });
       } else {
-        // Save user message to database
-        await ChatMessageService.createChatMessage(userChatMessage.toJson());
+        // Save user message to database with existing interaction
+        final messageData = {
+          'user_id': userChatMessage.userId,
+          'content': userChatMessage.content,
+          'is_ai_response': userChatMessage.isAiResponse,
+          'related_entity_id': userChatMessage.relatedEntityId,
+          'related_entity_type': userChatMessage.relatedEntityType,
+        };
+
+        await ChatMessageService.createChatMessage(messageData);
       }
+
+      // Create completion data for AI response
+      final completionData = {
+        'response': userMessage,
+        'processing_time': 1,
+        'tokens_used': 10,
+        'was_successful': true
+      };
 
       // Get AI response from API
       final response = await AIInteractionService.completeInteraction(
-          _currentInteractionId!, {'user_message': userMessage});
+          _currentInteractionId!, completionData);
 
-      final aiResponseContent = response['response'];
+      // Get the response from the completed interaction
+      final aiResponseContent =
+          response['response'] ?? "I'm sorry, I don't have a response.";
 
-      // Create AI response message
+      // Create AI response message - FIXED: use valid user ID
       final aiResponseMessage = ChatMessage(
-        userId: 0, // System user ID for AI
+        userId: _userId, // Using current user ID for AI messages (not 0)
         content: aiResponseContent,
         isAiResponse: true,
         createdAt: DateTime.now(),
@@ -195,8 +241,16 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         relatedEntityType: 'ai_interaction',
       );
 
-      // Save AI response to database
-      await ChatMessageService.createChatMessage(aiResponseMessage.toJson());
+      // Save AI response to database with valid user ID
+      final aiMessageData = {
+        'user_id': _userId, // Valid user ID that exists in the database
+        'content': aiResponseMessage.content,
+        'is_ai_response': aiResponseMessage.isAiResponse,
+        'related_entity_id': aiResponseMessage.relatedEntityId,
+        'related_entity_type': aiResponseMessage.relatedEntityType,
+      };
+
+      await ChatMessageService.createChatMessage(aiMessageData);
 
       // Add AI response to UI
       setState(() {
@@ -204,10 +258,12 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Handle errors gracefully
+      print('Error in _sendMessage: $e');
+
+      // Handle errors gracefully - FIXED: use valid user ID
       setState(() {
         messages.add(ChatMessage(
-          userId: 0,
+          userId: _userId, // Valid user ID for error messages too
           content: "I'm having trouble connecting. Please try again later.",
           isAiResponse: true,
           createdAt: DateTime.now(),
@@ -216,6 +272,19 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
       });
       _showSnackBar('Error: $e');
     }
+  }
+
+  // Helper method to create AI messages consistently
+  ChatMessage _createAiMessage(String content,
+      {int? relatedEntityId, String? relatedEntityType}) {
+    return ChatMessage(
+      userId: _userId, // Use valid user ID
+      content: content,
+      isAiResponse: true,
+      createdAt: DateTime.now(),
+      relatedEntityId: relatedEntityId,
+      relatedEntityType: relatedEntityType,
+    );
   }
 
   void _showMoreOptions() {
@@ -418,9 +487,10 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
 
   void _startNewChat() {
     setState(() {
+      // FIXED: use valid user ID for initial AI message
       messages = [
         ChatMessage(
-          userId: 0, // System user ID
+          userId: _userId, // Using current user ID
           content: 'Hello, I\'m JARVIS. How can I help you today?',
           isAiResponse: true,
           createdAt: DateTime.now(),
@@ -449,25 +519,27 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
             TextButton(
               onPressed: () async {
                 try {
-                  // Check if the method exists in your AIInteractionService
-                  if (AIInteractionService.updateInteraction != null) {
-                    await AIInteractionService.updateInteraction(
-                      savedChats[index]['id'],
-                      {'title': _renameController.text},
-                    );
-                  } else {
-                    // Fallback if the method doesn't exist
-                    await AIInteractionService.completeInteraction(
-                      savedChats[index]['id'],
-                      {'title': _renameController.text},
-                    );
-                  }
+                  // Get the new name
+                  final newName = _renameController.text.trim();
 
+                  // Convert to prompt field for the API
+                  final updates = {'prompt': newName};
+
+                  // Update via API
+                  await AIInteractionService.updateInteraction(
+                    savedChats[index]['id'],
+                    updates,
+                  );
+
+                  // Update the UI
                   setState(() {
-                    savedChats[index]['name'] = _renameController.text;
+                    savedChats[index]['name'] = newName;
                   });
+
                   Navigator.pop(context);
+                  _showSnackBar('Chat renamed successfully');
                 } catch (e) {
+                  print('Failed to rename chat: $e');
                   _showSnackBar('Failed to rename chat: $e');
                   Navigator.pop(context);
                 }
@@ -497,17 +569,8 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                 try {
                   final chatId = savedChats[index]['id'];
 
-                  // Check if the method exists in your AIInteractionService
-                  if (AIInteractionService.deleteInteraction != null) {
-                    await AIInteractionService.deleteInteraction(chatId);
-                  } else {
-                    // Fallback using a different approach if the method isn't available
-                    // You might need to implement this in your AIInteractionService
-                    _showSnackBar(
-                        'Delete function not implemented in AIInteractionService');
-                    Navigator.pop(context);
-                    return;
-                  }
+                  // Delete the interaction
+                  await AIInteractionService.deleteInteraction(chatId);
 
                   setState(() {
                     savedChats.removeAt(index);
@@ -519,8 +582,9 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                   }
 
                   Navigator.pop(context);
-                  _showSnackBar('Chat deleted');
+                  _showSnackBar('Chat deleted successfully');
                 } catch (e) {
+                  print('Failed to delete chat: $e');
                   Navigator.pop(context);
                   _showSnackBar('Failed to delete chat: $e');
                 }
@@ -798,23 +862,3 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
     }
   }
 }
-
-// Extensions to add to your AIInteractionService.dart if they don't exist already:
-/*
-static Future<void> deleteInteraction(int interactionId) async {
-  final response = await ApiClient.delete('/ai-interactions/$interactionId');
-  if (response.statusCode != 200) {
-    throw Exception('Failed to delete AI interaction');
-  }
-}
-
-static Future<Map<String, dynamic>> updateInteraction(
-    int interactionId, Map<String, dynamic> updates) async {
-  final response = await ApiClient.put('/ai-interactions/$interactionId', updates);
-  if (response.statusCode == 200) {
-    return json.decode(response.body);
-  } else {
-    throw Exception('Failed to update AI interaction: ${response.body}');
-  }
-}
-*/

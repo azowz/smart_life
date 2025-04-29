@@ -1,6 +1,6 @@
-
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
 import 'package:final_project/api/services/auth_service.dart';
+import 'package:final_project/api/api_config.dart';
 import 'package:flutter/material.dart';
 
 class SignInPage extends StatefulWidget {
@@ -15,6 +15,7 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -32,25 +33,40 @@ class _SignInPageState extends State<SignInPage> {
   Future<void> _signIn() async {
     if (!_formKey.currentState!.validate()) return;
 
+    setState(() {
+      _isLoading = true;
+    });
+
     String username = _usernameController.text.trim();
     String password = _passwordController.text.trim();
 
     try {
-      // Call AuthService to login
+      // Call AuthService to login with proper form data
       await AuthService.login(
         username: username,
         password: password,
       );
 
-      // Navigate to HomePageFirst on success
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePageFirst()),
-      );
+      // Check if token was successfully set
+      if (ApiConfig.authToken != null) {
+        // Navigate to HomePageFirst on success
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePageFirst()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login failed: No token received')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed: ${e.toString()}')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -148,14 +164,19 @@ class _SignInPageState extends State<SignInPage> {
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                        onPressed: _signIn,
-                        child: const Text(
-                          "Log In",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                          ),
-                        ),
+                        onPressed: _isLoading ? null : _signIn,
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.black54),
+                              )
+                            : const Text(
+                                "Log In",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 15,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 25),
