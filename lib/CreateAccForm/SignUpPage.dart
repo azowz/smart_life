@@ -1,5 +1,7 @@
+import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
+import 'package:final_project/api/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:final_project/ApiService.dart';
+
 import 'package:final_project/CreateAccForm/SignUpPage2.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -20,14 +22,12 @@ class _SignUpPageState extends State<SignUpPage> {
   String _selectedGender = '';
   bool _isPasswordVisible = false;
 
-  // Method to select gender
   void _selectGender(String gender) {
     setState(() {
       _selectedGender = gender;
     });
   }
 
-  // Function to handle form submission
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedGender.isEmpty) {
@@ -37,34 +37,37 @@ class _SignUpPageState extends State<SignUpPage> {
         return;
       }
 
-      // Show a loading indicator or snack bar to show the user is being created
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Creating account... Please wait')),
       );
 
-      // Call ApiService to create a user
-      bool success = await ApiService.createUser(
-        firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim(),
-        username: _usernameController.text.trim(),
-        email: _emailController.text.trim(),
-        phoneNumber: '+966${_phoneController.text.trim()}',
-        password: _passwordController.text.trim(),
-        gender: _selectedGender,
-      );
-
-      // Check if the user was successfully created
-      if (success) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SignUpPage2(username: _usernameController.text),
-          ),
+      try {
+        bool success = await AuthService.createUser(
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          username: _usernameController.text.trim(),
+          email: _emailController.text.trim(),
+          phoneNumber: '+966${_phoneController.text.trim()}',
+          password: _passwordController.text.trim(),
+          gender: _selectedGender,
         );
-      } else {
-        // If creation failed, show an appropriate error message
+
+        if (success) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePageFirst(),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to create account. Please check your info or try again.')),
+          );
+        }
+      } catch (e) {
+        // Handle unexpected errors
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to create account. Please check your info or try a different username/email.')),
+          SnackBar(content: Text('Error: ${e.toString()}')),
         );
       }
     }
@@ -237,7 +240,6 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // Gender selection button widget
   Widget _genderOption(String gender, String imagePath) {
     return GestureDetector(
       onTap: () => _selectGender(gender),

@@ -1,16 +1,14 @@
 buildscript {
-    ext.kotlin_version = '1.8.10'
- // Ensure this matches your Kotlin version
+    ext.kotlin_version = '1.8.10' // Set the Kotlin version
+
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0' // Ensure this matches your Android Gradle plugin version
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10'
-        classpath 'com.google.gms:google-services:4.3.3'  // Add this in the dependencies block
-        classpath 'com.google.gms:google-services:4.3.15'
-
+        classpath 'com.android.tools.build:gradle:8.2.1' // Updated to support Java 21
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Now matches
+        classpath 'com.google.gms:google-services:4.3.15' // Keep latest stable
     }
 }
 
@@ -18,22 +16,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
-    }
-}
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
     }
 }
 
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
 }
 

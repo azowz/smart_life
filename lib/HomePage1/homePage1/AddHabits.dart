@@ -1,7 +1,7 @@
-import 'package:final_project/ApiService.dart';
+import 'package:final_project/api/services/habit_category_service.dart';
 import 'package:flutter/material.dart';
 
-import 'package:final_project/HomePage1/homePage1/ReminderHabits.dart';
+
 import 'DoneEditHabit.dart';
 
 class AddHabits extends StatefulWidget {
@@ -12,7 +12,6 @@ class AddHabits extends StatefulWidget {
 }
 
 class _AddHabitsState extends State<AddHabits> {
-  final ApiService _apiService = ApiService();
   final TextEditingController _habitNameController = TextEditingController();
 
   final List<Color> colors = [
@@ -193,46 +192,46 @@ class _AddHabitsState extends State<AddHabits> {
     );
   }
 
-  Future<void> _addHabit() async {
-    final String name = _habitNameController.text;
-    final String color = colorNames[selectedColorIndex];
+Future<void> _addHabit() async {
+  final String name = _habitNameController.text;
+  final String color = colorNames[selectedColorIndex];
 
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a habit name')),
-      );
-      return;
-    }
-
-    bool success;
-    if (isReminderOn && reminderText.isNotEmpty) {
-      success = await _apiService.createHabit(
-        name,
-        color,
-        selectedGoal,
-        selectedFrequency,
-        reminderText,
-      );
-    } else {
-      success = await _apiService.addHabit(
-        name,
-        color,
-        selectedGoal,
-        selectedFrequency,
-      );
-    }
-
-    if (success) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => DoneEditHabit()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add habit. Please try again.')),
-      );
-    }
+  if (name.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please enter a habit name')),
+    );
+    return;
   }
+
+  bool success = false;
+  try {
+    if (isReminderOn && reminderText.isNotEmpty) {
+      success = await HabitCategoryService.addCategoryToHabit(
+        habitId: 1, // Replace with actual habitId
+        categoryId: 1, // Replace with actual categoryId
+      );
+    } else {
+      success = await HabitCategoryService.addCategoryToHabit(
+        habitId: 1, // Replace with actual habitId
+        categoryId: 1, // Replace with actual categoryId
+      );
+    }
+  } catch (e) {
+    print('Error in adding habit: $e');
+  }
+
+  if (success) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DoneEditHabit()),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to add habit. Please try again.')),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -350,13 +349,15 @@ class _AddHabitsState extends State<AddHabits> {
                                               Navigator.pop(context);
                                             },
                                             child: Container(
-                                              margin: EdgeInsets.all(6),
+                                              margin: EdgeInsets.all(8),
+                                              width: 32,
+                                              height: 32,
                                               decoration: BoxDecoration(
                                                 color: colors[index],
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                                shape: BoxShape.circle,
                                                 border: Border.all(
-                                                    color: Colors.black26),
+                                                    color: colors[index],
+                                                    width: 2),
                                               ),
                                             ),
                                           );
@@ -365,22 +366,9 @@ class _AddHabitsState extends State<AddHabits> {
                                     ),
                                   );
                                 },
-                                child: Container(
-                                  width: 32,
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                    color: colors[selectedColorIndex],
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: Colors.black26),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  colorNames[selectedColorIndex],
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.black),
+                                child: CircleAvatar(
+                                  backgroundColor: colors[selectedColorIndex],
+                                  radius: 26,
                                 ),
                               ),
                             ],
@@ -393,113 +381,12 @@ class _AddHabitsState extends State<AddHabits> {
               ),
               SizedBox(height: 20),
 
-              // GOAL SECTION
-              Container(
-                width: 370,
-                height: 180,
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black, width: 1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("GOAL", style: TextStyle(fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          displayGoalText.isEmpty
-                              ? "$selectedGoal time"
-                              : displayGoalText,
-                          style: TextStyle(fontSize: 20, color: Colors.black),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: IconButton(
-                            icon: Icon(Icons.edit, color: Colors.black),
-                            onPressed: () {
-                              _showGoalInputDialog();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              selectedFrequency = 'Everyday';
-                            });
-                          },
-                          icon: Icon(Icons.calendar_today, color: Colors.black),
-                          label: Text("Everyday",
-                              style: TextStyle(color: Colors.black)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              selectedFrequency = 'Weekly';
-                            });
-                          },
-                          icon: Icon(Icons.calendar_today, color: Colors.black),
-                          label: Text("Weekly",
-                              style: TextStyle(color: Colors.black)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              // GOAL
+              Text(
+                'Goal: $displayGoalText',
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
-              SizedBox(height: 30),
-
-              // Reminder Section
-              if (isReminderOn && reminderText.isNotEmpty)
-                Container(
-                  width: 370,
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Reminder",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: _showReminderInputDialog,
-                          ),
-                        ],
-                      ),
-                      Text(reminderText),
-                    ],
-                  ),
-                ),
-              SizedBox(height: 10),
-
-              // Add Reminder Button
+              SizedBox(height: 6),
               Container(
                 width: 370,
                 height: 52,
@@ -508,18 +395,32 @@ class _AddHabitsState extends State<AddHabits> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: TextButton(
-                  onPressed: () {
-                    _showReminderInputDialog();
-                  },
+                  onPressed: _showGoalInputDialog,
                   child: Text(
-                    isReminderOn ? "Edit Reminder" : "Add Reminder",
+                    'Set Goal',
                     style: TextStyle(color: Colors.black, fontSize: 16),
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 20),
 
-              // Add Habit Button
+              // REMINDER
+              Row(
+                children: [
+                  Text(
+                    'Reminder: $reminderText',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  Spacer(),
+                  IconButton(
+                    icon: Icon(Icons.alarm, color: Colors.white),
+                    onPressed: _showReminderInputDialog,
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+
+              // ADD HABIT BUTTON
               Container(
                 width: 370,
                 height: 52,

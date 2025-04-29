@@ -69,7 +69,7 @@ void _navigateToPage(int index, BuildContext context) {
 
 class _MyHomePageState extends State<HomePageFirst> {
   int _selectedIndex = 0;
-  final String _username = "user5";
+  final String _username = "";
   int completedTasks = 0;
   int totalTasks = 5;
   final List<Map<String, dynamic>> _habits = [];

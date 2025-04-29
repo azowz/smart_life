@@ -1,6 +1,7 @@
 import 'package:final_project/HomePage1/homePage1/HomaPageFirst.dart';
+import 'package:final_project/api/services/auth_service.dart';
+import 'package:final_project/api/services/default_habit_service.dart';
 import 'package:flutter/material.dart';
-import 'package:final_project/ApiService.dart'; // Import your ApiService
 
 class SignUpPage3 extends StatefulWidget {
   final String username;
@@ -21,39 +22,38 @@ class _SignUpPage3State extends State<SignUpPage3> {
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _fetchDefaultHabits(); // Fetch default habits when the page initializes
   }
 
-  // Fetch user data (username and habits) from the backend
-  Future<void> _fetchUserData() async {
-  try {
-    final userData = await ApiService.fetchUserData(widget.username); // Pass username here
+  // Fetch default habits from the backend
+  Future<void> _fetchDefaultHabits() async {
+    try {
+      // You can fetch all default habits here
+      final defaultHabits = await DefaultHabitService.getDefaultHabits(activeOnly: true);
 
-    if (userData.isNotEmpty) {
-      setState(() {
-        usernameFromDB = userData['username'] ?? ''; // Default to empty string if null
-        habitsFromDB = Set<String>.from(userData['habits'] ?? []); // Default to empty list if null
-      });
-    } else {
+      if (defaultHabits.isNotEmpty) {
+        setState(() {
+          habitsFromDB = Set<String>.from(defaultHabits.map((habit) => habit['name']));
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No default habits found')),
+        );
+      }
+    } catch (e) {
+      // In case of an error, handle the exception and show a SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No user data found or user has no habits')),
+        SnackBar(content: Text('Failed to load default habits: $e')),
       );
     }
-  } catch (e) {
-    // In case of an error, handle the exception and show a SnackBar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to load user data: $e')),
-    );
   }
-}
-
 
   void _changeAvatar() {
     // Code to change avatar from the gallery
   }
 
   void _createAccount() async {
-    bool success = await ApiService.createAccount(
+    bool success = await AuthService.createAccount(
       username: widget.username,
       habits: habitsFromDB.toList(),
       agreeToTerms: _agreeToTerms,
@@ -195,9 +195,11 @@ class _SignUpPage3State extends State<SignUpPage3> {
                           ? habitsFromDB.map((habit) {
                               return habitContainer(habit);
                             }).toList()
-                          : widget.selectedHabits.map((habit) {
-                              return habitContainer(habit);
-                            }).toList(),
+                          : widget.selectedHabits.isNotEmpty
+                              ? widget.selectedHabits.map((habit) {
+                                  return habitContainer(habit);
+                                }).toList()
+                              : [],
                     ),
                   ],
                 ),
