@@ -8,27 +8,11 @@ class AIInteractionService {
   static Future<Map<String, dynamic>> createInteraction(
       Map<String, dynamic> interactionData) async {
     try {
-      // Ensure required fields match the AIInteractionCreate schema
-      if (!interactionData.containsKey('user_id')) {
-        throw Exception('user_id is required for AI interaction');
-      }
-
-      // Use 'title' as 'prompt' if needed
-      if (interactionData.containsKey('title') &&
-          !interactionData.containsKey('prompt')) {
-        interactionData['prompt'] = interactionData['title'];
-        interactionData.remove('title');
-      }
-
-      // Ensure prompt is present
-      if (!interactionData.containsKey('prompt')) {
-        interactionData['prompt'] = 'New conversation';
-      }
-
-      // Default interaction type
-      interactionData.putIfAbsent('interaction_type', () => 'chat');
-
-      // Remove fields not defined in schema
+      // Validate required fields
+      interactionData['user_id'] ??= 0;
+      interactionData['prompt'] ??=
+          interactionData.remove('title') ?? 'New conversation';
+      interactionData['interaction_type'] ??= 'chat';
       interactionData.remove('status');
 
       print('Creating AI interaction with data: $interactionData');
@@ -50,14 +34,13 @@ class AIInteractionService {
     }
   }
 
-  /// Complete an interaction (no need to send response — backend generates it)
+  /// Complete an interaction
   static Future<Map<String, dynamic>> completeInteraction(
       int interactionId, Map<String, dynamic> completionData) async {
     try {
-      // Required fields for completion
-      completionData.putIfAbsent('user_message', () => 'No message');
-      completionData.putIfAbsent('processing_time', () => 1);
-      completionData.putIfAbsent('tokens_used', () => 10);
+      completionData.putIfAbsent('response', () => null);
+      completionData.putIfAbsent('processing_time', () => null);
+      completionData.putIfAbsent('tokens_used', () => null);
       completionData.putIfAbsent('was_successful', () => true);
 
       print('Completing interaction $interactionId with data: $completionData');
@@ -142,11 +125,7 @@ class AIInteractionService {
   static Future<Map<String, dynamic>> updateInteraction(
       int interactionId, Map<String, dynamic> updates) async {
     try {
-      // Use 'title' as 'prompt' if needed
-      if (updates.containsKey('title') && !updates.containsKey('prompt')) {
-        updates['prompt'] = updates['title'];
-        updates.remove('title');
-      }
+      updates['prompt'] ??= updates.remove('title');
 
       print('Updating interaction $interactionId with data: $updates');
 

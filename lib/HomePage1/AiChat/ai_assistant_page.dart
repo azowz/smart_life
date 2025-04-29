@@ -8,6 +8,8 @@ import '../../api/models/chat_message.dart';
 // Import your API services
 import '../../api/services/chat_message_service.dart';
 import '../../api/services/ai_interaction_service.dart';
+import '../../api/services/ai_feedback_service.dart';
+import '../../api/models/ai_feedback.dart';
 
 class AiAssistantPage extends StatefulWidget {
   const AiAssistantPage({super.key});
@@ -17,30 +19,49 @@ class AiAssistantPage extends StatefulWidget {
 }
 
 class _AiAssistantPageState extends State<AiAssistantPage> {
-  int _selectedIndex = 2; // Set to 2 for JARVIS tab
+// Selected tab index, default is 2 (JARVIS tab)
+  int _selectedIndex = 2;
+
+// Controller for the input text field
   final TextEditingController _controller = TextEditingController();
+
+// List of current chat messages displayed in the UI
   List<ChatMessage> messages = [];
+
+// List to hold saved chat sessions (e.g., past conversations)
   List<Map<String, dynamic>> savedChats = [];
+
+// Key to control the Scaffold (for opening drawer, showing snackbars, etc.)
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+// New chat name used when renaming a conversation
   String newChatName = '';
+
+// Controller for renaming a saved chat
   final TextEditingController _renameController = TextEditingController();
+
+// Loading indicator for API calls or heavy operations
   bool _isLoading = false;
+
+// Holds the current AI interaction ID, if any
   int? _currentInteractionId;
-  int _userId = 1; // Replace with actual user ID from auth system
+
+// Temporary hardcoded user ID (should be replaced with real authenticated user ID later)
+  int _userId = 1; // TODO: Replace with actual user ID from auth system
 
   @override
   void initState() {
     super.initState();
-    _initializeChat();
-    _loadSavedChats();
+    _initializeChat(); // Setup first AI greeting message
+    _loadSavedChats(); // Load previously saved conversations (if any)
   }
 
+// Initializes the chat with a default AI welcome message
   void _initializeChat() {
     setState(() {
-      // Create initial greeting message from AI - FIXED: use valid user ID
       messages = [
         ChatMessage(
-          userId: _userId, // Using current user ID instead of 0
+          userId: _userId, // Attach message to current user
           content: 'Hello, I\'m JARVIS. How can I help you today?',
           isAiResponse: true,
           createdAt: DateTime.now(),
@@ -50,72 +71,84 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
   }
 
   // Load user's saved chat interactions
+  // Loads saved chat interactions for the current user from the backend
   Future<void> _loadSavedChats() async {
     try {
+      // Start loading indicator
       setState(() {
         _isLoading = true;
       });
 
-      print('Loading saved chats for user $_userId');
+      print('🔄 Loading saved chats for user $_userId');
 
-      // Get user's previous interactions from API
+      // Fetch user's previous AI interactions from the API
       final interactions =
           await AIInteractionService.getUserInteractions(_userId);
 
-      print('Loaded ${interactions.length} interactions');
+      print('✅ Loaded ${interactions.length} interactions');
 
+      // Update saved chats based on the API response
       setState(() {
         savedChats = interactions.map<Map<String, dynamic>>((interaction) {
-          // Use the correct field names from the backend schema
           return {
-            'id': interaction[
-                'interaction_id'], // Field from AIInteractionResponse
+            'id': interaction['interaction_id'], // Map backend field correctly
             'name': interaction['prompt'] ??
-                'Unnamed Chat', // Use prompt instead of title
-            'timestamp': interaction['created_at'],
+                'Unnamed Chat', // Use prompt as chat title
+            'timestamp': interaction[
+                'created_at'], // Store timestamp for sorting if needed
           };
         }).toList();
-        _isLoading = false;
+
+        _isLoading = false; // Stop loading indicator
       });
     } catch (e) {
+      // On error, stop loading and show an error message
       setState(() {
         _isLoading = false;
       });
-      print('Error loading saved chats: $e');
+      print('❌ Error loading saved chats: $e');
       _showSnackBar('Failed to load chats: $e');
     }
   }
 
-  // Load a specific chat history
+  // Load a specific chat history by interaction ID
   Future<void> _loadChatHistory(int interactionId) async {
     try {
+      // Start loading indicator
       setState(() {
         _isLoading = true;
       });
 
-      print('Loading chat history for interaction $interactionId');
+      print('🔄 Loading chat history for interaction $interactionId');
 
-      // Get messages for this interaction from API
+      // Fetch messages associated with this AI interaction from API
       final response = await ChatMessageService.getMessagesByEntity(
-          'ai_interaction', interactionId,
-          skip: 0, limit: 100);
+        'ai_interaction',
+        interactionId,
+        skip: 0,
+        limit: 100,
+      );
 
+      // Prepare a list to hold parsed chat messages
       List<ChatMessage> chatHistory = [];
+
+      // Map each message from API response into a ChatMessage object
       for (var msg in response) {
-        // Convert API response to ChatMessage objects
         chatHistory.add(ChatMessage(
           messageId: msg['message_id'],
-          userId: msg['user_id'] ?? _userId, // Default to current user if null
-          content: msg['content'] ?? '',
+          userId:
+              msg['user_id'] ?? _userId, // Fallback to current user ID if null
+          content: msg['content'] ?? '', // Fallback to empty string
           isAiResponse: msg['is_ai_response'] ?? false,
           createdAt: msg['created_at'] != null
               ? DateTime.parse(msg['created_at'])
-              : null,
+              : null, // Parse date if available
           relatedEntityId: msg['related_entity_id'],
           relatedEntityType: msg['related_entity_type'],
         ));
       }
 
+      // Update UI with the loaded chat history
       setState(() {
         messages = chatHistory;
         _currentInteractionId = interactionId;
@@ -123,24 +156,24 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
       });
 
       print(
-          'Loaded ${chatHistory.length} messages for interaction $interactionId');
+          '✅ Loaded ${chatHistory.length} messages for interaction $interactionId');
     } catch (e) {
+      // Handle errors gracefully
       setState(() {
         _isLoading = false;
       });
-      print('Error loading chat history: $e');
+      print('❌ Error loading chat history: $e');
       _showSnackBar('Failed to load chat history: $e');
     }
   }
 
-  // Send message to AI and get response - FIXED: uses valid user IDs for AI messages
   Future<void> _sendMessage() async {
     if (_controller.text.isEmpty) return;
 
     final userMessage = _controller.text;
     _controller.clear();
 
-    // Create a user message
+    // ➊ إنشاء رسالة المستخدم محليًا
     final userChatMessage = ChatMessage(
       userId: _userId,
       content: userMessage,
@@ -151,39 +184,30 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
           _currentInteractionId != null ? 'ai_interaction' : null,
     );
 
-    // Add user message to UI immediately
     setState(() {
       messages.add(userChatMessage);
       _isLoading = true;
     });
 
     try {
-      // Create a new interaction if this is a new chat
+      // ➋ إذا كانت محادثة جديدة، أنشئ interaction جديد
       if (_currentInteractionId == null) {
-        print('Creating new AI interaction');
-
-        // Create proper interaction data matching backend schema
         final interactionData = {
           'user_id': _userId,
-          'prompt': userMessage, // Required field in schema
-          'interaction_type': 'chat', // Required enum value
+          'prompt': userMessage,
+          'interaction_type': 'chat',
         };
 
         final interaction =
             await AIInteractionService.createInteraction(interactionData);
 
-        print('Created interaction: $interaction');
-
-        // Get the interaction_id field name from backend
         _currentInteractionId = interaction['interaction_id'];
 
-        // Update the user message with the entity ID
         final updatedUserMessage = userChatMessage.copyWith(
           relatedEntityId: _currentInteractionId,
           relatedEntityType: 'ai_interaction',
         );
 
-        // Save user message to database with proper schema fields
         final messageData = {
           'user_id': updatedUserMessage.userId,
           'content': updatedUserMessage.content,
@@ -194,7 +218,6 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
 
         await ChatMessageService.createChatMessage(messageData);
 
-        // Add this chat to saved chats
         setState(() {
           savedChats.add({
             'id': _currentInteractionId,
@@ -203,8 +226,9 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
           });
         });
       } else {
-        // Save user message to database with existing interaction
+        // ➌ إذا كانت محادثة موجودة، احفظ فقط رسالة المستخدم
         final messageData = {
+          'user_message': userMessage, // ✅ هذا المطلوب
           'user_id': userChatMessage.userId,
           'content': userChatMessage.content,
           'is_ai_response': userChatMessage.isAiResponse,
@@ -215,25 +239,29 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         await ChatMessageService.createChatMessage(messageData);
       }
 
-      // Create completion data for AI response
+      // ➍ تجهيز بيانات إكمال التفاعل (لا ترسل user_message هنا!)
       final completionData = {
-        'response': userMessage,
-        'processing_time': 1,
-        'tokens_used': 10,
+        'user_message': userMessage, // ✅ أضف هذا السطر
+        'response': null,
+        'processing_time': null,
+        'tokens_used': null,
         'was_successful': true
       };
 
-      // Get AI response from API
-      final response = await AIInteractionService.completeInteraction(
-          _currentInteractionId!, completionData);
+      // ✅ طباعة البيانات للتأكد مما يُرسل
+      print('🟣 Sending completionData to backend: $completionData');
 
-      // Get the response from the completed interaction
+      // ➎ طلب إكمال التفاعل من السيرفر
+      final response = await AIInteractionService.completeInteraction(
+        _currentInteractionId!,
+        completionData,
+      );
+
       final aiResponseContent =
           response['response'] ?? "I'm sorry, I don't have a response.";
 
-      // Create AI response message - FIXED: use valid user ID
       final aiResponseMessage = ChatMessage(
-        userId: _userId, // Using current user ID for AI messages (not 0)
+        userId: _userId,
         content: aiResponseContent,
         isAiResponse: true,
         createdAt: DateTime.now(),
@@ -241,37 +269,152 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
         relatedEntityType: 'ai_interaction',
       );
 
-      // Save AI response to database with valid user ID
       final aiMessageData = {
-        'user_id': _userId, // Valid user ID that exists in the database
+        'user_id': _userId,
         'content': aiResponseMessage.content,
-        'is_ai_response': aiResponseMessage.isAiResponse,
+        'is_ai_response': true,
         'related_entity_id': aiResponseMessage.relatedEntityId,
         'related_entity_type': aiResponseMessage.relatedEntityType,
       };
 
       await ChatMessageService.createChatMessage(aiMessageData);
 
-      // Add AI response to UI
       setState(() {
         messages.add(aiResponseMessage);
         _isLoading = false;
       });
     } catch (e) {
-      print('Error in _sendMessage: $e');
+      print('❌ Error in _sendMessage: $e');
 
-      // Handle errors gracefully - FIXED: use valid user ID
       setState(() {
         messages.add(ChatMessage(
-          userId: _userId, // Valid user ID for error messages too
+          userId: _userId,
           content: "I'm having trouble connecting. Please try again later.",
           isAiResponse: true,
           createdAt: DateTime.now(),
         ));
         _isLoading = false;
       });
+
       _showSnackBar('Error: $e');
     }
+  }
+
+  // Method to submit feedback
+  Future<void> _submitFeedback(int rating, String? feedbackText) async {
+    if (_currentInteractionId == null) {
+      _showSnackBar('No active conversation to rate');
+      return;
+    }
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Create feedback data matching the AIFeedbackCreate schema
+      final feedbackData = {
+        'interaction_id': _currentInteractionId!,
+        'user_id': _userId,
+        'rating': rating,
+        if (feedbackText != null && feedbackText.isNotEmpty)
+          'feedback_text': feedbackText,
+      };
+
+      await AIFeedbackService.createFeedback(feedbackData);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      _showSnackBar('Thank you for your feedback!');
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Error submitting feedback: $e');
+      _showSnackBar('Failed to submit feedback: $e');
+    }
+  }
+
+  // Show feedback dialog
+  void _showFeedbackDialog() {
+    if (_currentInteractionId == null) {
+      _showSnackBar('Please start a conversation first');
+      return;
+    }
+
+    int selectedRating = 0;
+    final feedbackController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Rate this conversation'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('How would you rate your experience with JARVIS?'),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          index < selectedRating
+                              ? Icons.star
+                              : Icons.star_border,
+                          color: index < selectedRating
+                              ? Colors.amber
+                              : Colors.grey,
+                          size: 32,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            selectedRating = index + 1;
+                          });
+                        },
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: feedbackController,
+                    decoration: const InputDecoration(
+                      hintText: 'Additional comments (optional)',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (selectedRating > 0) {
+                      _submitFeedback(selectedRating, feedbackController.text);
+                      Navigator.pop(context);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please select a rating')),
+                      );
+                    }
+                  },
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   // Helper method to create AI messages consistently
@@ -321,6 +464,16 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
                   _showSuggestedQuestions();
                 },
               ),
+              // Add feedback option when there's an active conversation
+              if (_currentInteractionId != null)
+                ListTile(
+                  leading: const Icon(Icons.star, color: Colors.amber),
+                  title: const Text('Rate Conversation'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showFeedbackDialog();
+                  },
+                ),
             ],
           ),
         );
@@ -689,6 +842,25 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
               ),
             ),
           ),
+
+          // Add a feedback button if there's an active conversation
+          if (_currentInteractionId != null)
+            Positioned(
+              top: 166 + 16, // Below the avatar
+              right: 16,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.star, size: 16),
+                label: const Text('Rate'),
+                onPressed: _showFeedbackDialog,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  foregroundColor: Colors.black,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  minimumSize: const Size(80, 36),
+                ),
+              ),
+            ),
 
           // Chat input box at the bottom
           Positioned(
