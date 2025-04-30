@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    environment:
+      - final_project_DB__uri=postgresql://postgres:postgres@db:5432/final_project
+      - final_project_DB__connect_args={}
+    volumes:
+      - .:/home/app/web
+    depends_on:
+      - db
+  db:
+    build: postgres
+    image: final_project_postgres-13-alpine-multi-user
+    volumes:
+      - $HOME/.postgres/final_project_db/data/postgresql:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_DBS=final_project, final_project_test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

@@ -1,0 +1,23 @@
+[default]
+
+[default.security]
+# Secret key will be loaded from environment variable or generated securely
+algorithm = "HS256"
+access_token_expire_minutes = 100000
+refresh_token_expire_minutes = 600
+
+[default.server]
+port = 8000
+host = "127.0.0.1"
+log_level = "info"
+reload = false
+
+[default.db]
+uri = "postgresql+psycopg2://postgres:123123123@localhost:5432/smart_life_organizer"
+connect_args = {}
+echo = true
+
+[default.ai]
+openai_api_key = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+deepseek_api_key = "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"
+AI_API_URL = "https://api.deepseek.com/v1/chat"

@@ -1,0 +1,8 @@
+[run]
+source = final_project
+
+[report]
+omit =
+    */python?.?/*
+    */site-packages/nose/*
+    final_project/__main__.py
