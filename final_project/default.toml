@@ -1,10 +1,10 @@
 [default]
 
 [default.security]
-# Secret key will be loaded from environment variable or generated securely
+secret_key = "your-very-secure-random-secret-key"
 algorithm = "HS256"
-access_token_expire_minutes = 100000
-refresh_token_expire_minutes = 600
+access_token_expire_minutes = 43200   # 30 days
+refresh_token_expire_minutes = 129600  # 90 days
 
 [default.server]
 port = 8000
@@ -13,11 +13,16 @@ log_level = "info"
 reload = false
 
 [default.db]
-uri = "postgresql+psycopg2://postgres:123123123@localhost:5432/smart_life_organizer"
+uri = "postgresql+psycopg2://postgres:Azozazoz1@localhost:5432/smart_life_organizer2"
 connect_args = {}
 echo = true
 
 [default.ai]
-openai_api_key = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-deepseek_api_key = "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"
-AI_API_URL = "https://api.deepseek.com/v1/chat"
+# You should choose which model provider you use
+api_key = "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"  # OpenRouter Key
+api_url = "https://openrouter.ai/api/v1/chat/completions"  # Universal endpoint for OpenRouter
+model = "deepseek/deepseek-chat-v3-0324"  # Default model to use
+http_referer = "http://localhost"  # Required for OpenRouter
+app_title = "Smart Life Organizer"  # Optional: used for ranking in OpenRouter
+temperature = 0.7
+max_tokens = 2000
