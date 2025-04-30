@@ -3,18 +3,18 @@ from typing import Optional
 from datetime import datetime
 from enum import Enum
 
-# ✅ Enum for types of AI interactions
+# Enum for interaction types
 class InteractionType(str, Enum):
-    CHAT = "chat"           # AI chat conversation
-    SUGGESTION = "suggestion"   # Task or habit suggestion
-    ANALYSIS = "analysis"       # Analytical or data-driven request
+    CHAT = "chat"
+    SUGGESTION = "suggestion"
+    ANALYSIS = "analysis"
 
-# ✅ Request body schema for creating a new AI interaction
+# Schema for creating an interaction
 class AIInteractionCreate(BaseModel):
-    user_id: int                         # User initiating the interaction
-    prompt: str                          # Initial message to the AI
-    template_id: Optional[int] = None    # Optional template association
-    interaction_type: InteractionType    # Enum value specifying interaction purpose
+    user_id: int
+    prompt: str
+    template_id: Optional[int] = None
+    interaction_type: InteractionType
 
     @validator('prompt')
     def prompt_must_not_be_empty(cls, v):
@@ -22,12 +22,12 @@ class AIInteractionCreate(BaseModel):
             raise ValueError('Prompt cannot be empty')
         return v.strip()
 
-# ✅ Request body schema for completing an AI interaction
+# Schema for completing an interaction
 class AIInteractionComplete(BaseModel):
-    user_message: str                           # Required: original message from user (used in fallback)
-    processing_time: Optional[int] = None       # How long the AI took to respond (in ms)
-    tokens_used: Optional[int] = None           # Number of tokens used
-    was_successful: bool = True                 # Indicates success/failure of interaction
+    user_message: str
+    processing_time: Optional[int] = None
+    tokens_used: Optional[int] = None
+    was_successful: bool = True
 
     @validator('processing_time')
     def validate_processing_time(cls, v):
@@ -41,28 +41,27 @@ class AIInteractionComplete(BaseModel):
             raise ValueError('Tokens used cannot be negative')
         return v
 
-# ✅ Response model for returning a full AI interaction
+# Schema for returning an interaction
 class AIInteractionResponse(BaseModel):
-    interaction_id: int                    # Unique identifier
-    user_id: int                           # Owner user
-    prompt: str                            # Original user prompt
-    response: Optional[str] = None         # AI-generated response
-    template_id: Optional[int] = None      # Linked template if any
-    interaction_type: str                  # Type of interaction (chat, suggestion, ...)
-    created_at: datetime                   # Timestamp of interaction
-    processing_time: Optional[int] = None  # Time taken in milliseconds
-    tokens_used: Optional[int] = None      # Tokens used
-    was_successful: bool                   # Whether it completed without failure
+    interaction_id: int
+    user_id: int
+    prompt: str
+    response: Optional[str] = None
+    template_id: Optional[int] = None
+    interaction_type: str
+    created_at: datetime
+    processing_time: Optional[int] = None
+    tokens_used: Optional[int] = None
+    was_successful: bool
 
-    # Pydantic V2 configuration to support ORM model conversion
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": True}  # For SQLAlchemy integration
 
-# ✅ Aggregated statistics response model
+# Schema for stats
 class AIInteractionStats(BaseModel):
-    total_interactions: int               # Total count
-    successful_interactions: int          # Number of successful ones
-    success_rate: float                   # % of success
-    total_tokens: int                     # All tokens consumed
-    avg_processing_time: float            # Mean response time
-    period_days: int                      # Period this stat was computed over
-    user_id: Optional[int] = None         # Optional: Filtered by user (if requested)
+    total_interactions: int
+    successful_interactions: int
+    success_rate: float
+    total_tokens: int
+    avg_processing_time: float
+    period_days: int
+    user_id: Optional[int] = None

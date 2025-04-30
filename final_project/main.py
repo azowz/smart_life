@@ -93,3 +93,4 @@ if __name__ == "__main__":
 #     # logic to create a user
 #     # E.g., saving user to the database
 #     return {"message": "User created successfully"}
+#     UserPasssword123!
