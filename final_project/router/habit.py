@@ -35,7 +35,6 @@ async def create_habit(
         description=habit.description,
         frequency=habit.frequency,
         user_id=current_user.user_id,
-        is_active=habit.is_active,
         # Add any other fields from your HabitCreate schema
     )
     session.add(db_habit)

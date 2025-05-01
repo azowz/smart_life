@@ -42,6 +42,6 @@ settings.ai.api_url
 settings.ai.model
 settings.ai.http_referer
 settings.ai.app_title
-settings.ai.temperature
+settings.ai.temperatureQ
 settings.ai.max_tokens
 """

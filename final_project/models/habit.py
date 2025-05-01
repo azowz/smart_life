@@ -16,7 +16,7 @@ class HabitDB(Base):
     description = Column(Text)  # Habit description
     frequency = Column(String(10), nullable=False, default="daily")  # Frequency: daily, weekly, monthly
     reminders = Column(JSON, default=[])  # Reminders as JSON array
-    time = Column(Time)  # Habit time
+    time = Column(Time, nullable=True)  # ✅ allow NULL values
     start_date = Column(Date, default=func.current_date())  # Start date
     target_count = Column(Integer, default=1)  # Target count
     is_default_habit = Column(Boolean, default=False)  # Flag for default habits

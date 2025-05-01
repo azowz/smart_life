@@ -1,6 +1,6 @@
 from pydantic import BaseModel, validator
 from typing import Optional, List, Dict, Any
-from datetime import date, time
+from datetime import date, time, datetime  # ✅ ADDED datetime import
 from enum import Enum
 
 # Enum for habit frequency
@@ -11,14 +11,14 @@ class HabitFrequency(str, Enum):
 
 # Schema for creating a habit
 class HabitCreate(BaseModel):
-    user_id: int
+    user_id: Optional[int] = None  # ✅ user_id is set from current_user, not required in JSON
     name: str
     color: Optional[str] = "#4287f5"
     color_name: Optional[str] = None
     description: Optional[str] = None
     frequency: HabitFrequency = HabitFrequency.DAILY
     reminders: Optional[List[Dict[str, Any]]] = []
-    time: Optional[time] = None
+    time: Optional[time]  # ✅ accept a valid time object
     start_date: Optional[date] = None
     target_count: Optional[int] = 1
     is_default_habit: Optional[bool] = False
@@ -46,6 +46,13 @@ class HabitCreate(BaseModel):
     def validate_target_count(cls, v):
         if v is not None and v < 1:
             raise ValueError('Target count must be at least 1')
+        return v
+
+    # Parse time string to time object
+    @validator('time', pre=True)
+    def parse_time(cls, v):
+        if isinstance(v, str):
+            return datetime.strptime(v, "%H:%M:%S").time()  # ✅ parses "HH:MM:SS" string
         return v
 
 # Schema for updating a habit
@@ -99,12 +106,11 @@ class HabitResponse(BaseModel):
     ai_generated: bool
     created_at: date
 
-    model_config = {"from_attributes": True}  # Pydantic v2 compatible
+    model_config = {"from_attributes": True}  # ✅ Pydantic v2 compatible
 
 # ----------------------------
 # Habit Log schemas
 
-# Schema for creating habit logs
 class HabitLogCreate(BaseModel):
     habit_id: int
     completed_date: date
@@ -117,7 +123,6 @@ class HabitLogCreate(BaseModel):
             raise ValueError('Count must be at least 1')
         return v
 
-# Schema for updating habit logs
 class HabitLogUpdate(BaseModel):
     count: Optional[int] = None
     notes: Optional[str] = None
@@ -128,7 +133,6 @@ class HabitLogUpdate(BaseModel):
             raise ValueError('Count must be at least 1')
         return v
 
-# Schema for habit log response
 class HabitLogResponse(BaseModel):
     log_id: int
     habit_id: int
@@ -137,4 +141,4 @@ class HabitLogResponse(BaseModel):
     notes: Optional[str] = None
     created_at: date
 
-    model_config = {"from_attributes": True}  # Pydantic v2 compatible
+    model_config = {"from_attributes": True}  # ✅ Pydantic v2 compatible

@@ -1,7 +1,7 @@
 [default]
 
 [default.security]
-secret_key = "your-very-secure-random-secret-key"
+secret_key = "generated-secret-key-here"  # Replace with: openssl rand -hex 32
 algorithm = "HS256"
 access_token_expire_minutes = 43200   # 30 days
 refresh_token_expire_minutes = 129600  # 90 days
@@ -18,14 +18,30 @@ connect_args = {}
 echo = true
 
 [default.ai]
-# You should choose which model provider you use
-api_key = "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"  # OpenRouter Key
-api_url = "https://openrouter.ai/api/v1/chat/completions"  # Universal endpoint for OpenRouter
-model = "deepseek/deepseek-chat-v3-0324"  # Default model to use
-http_referer = "http://localhost"  # Required for OpenRouter
-app_title = "Smart Life Organizer"  # Optional: used for ranking in OpenRouter
-temperature = 0.7
-max_tokens = 2000
+# OpenRouter Configuration
+provider = "openrouter"
+api_key = "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"  # Will be loaded from environment variables
+api_url = "https://openrouter.ai/api/v1/chat/completions"
+model = "deepseek/deepseek-chat-v3-0324"  # Updated to current recommended model
+
+# Required Headers (will be constructed programmatically)
+http_referer = "http://localhost:3000"
+app_title = "Smart Life Organizer"
+
+# Model Parameters
+temperature = 0.4  # Good default for balanced responses
+max_tokens = 500  # Appropriate for most use cases
+#stream = false     # Good for non-streaming (set true for real-time)
 
 
-#
+
+
+
+
+
+
+
+
+
+
+

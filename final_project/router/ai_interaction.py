@@ -113,3 +113,21 @@ def get_interactions_by_interaction_type(
         )
 
     return get_interactions_by_type(db, interaction_type, limit, offset)
+
+
+
+@router.delete("/{interaction_id}", status_code=200)
+def delete_ai_interaction(
+    interaction_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserDB = Depends(get_current_user)
+):
+    interaction = get_interaction(db, interaction_id)
+    if not interaction:
+        raise HTTPException(status_code=404, detail="Interaction not found")
+    if interaction.user_id != current_user.user_id and not current_user.superuser:
+        raise HTTPException(status_code=403, detail="Not authorized to delete")
+    
+    db.delete(interaction)
+    db.commit()
+    return {"detail": f"Interaction {interaction_id} deleted successfully"}
